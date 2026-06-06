@@ -8,9 +8,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RadiumLauncher.Models;
 using RadiumLauncher.Services;
-using System.Net.Http;
-using System.Text.Json;
-using System.Diagnostics;
 
 namespace RadiumLauncher.ViewModels;
 
