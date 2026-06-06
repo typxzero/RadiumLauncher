@@ -12,9 +12,9 @@ An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
 | Operating System | Compatibility |
 | :--- | :--- |
-| Windows 10/11 | Yes |
-| Linux | Yes |
-| macOS | No |
+| Windows 10/11 | ✅ Compatible |
+| Linux | ✅ Compatible |
+| macOS | ❌ Uncompatible |
 
 ## Download
 
