@@ -100,6 +100,7 @@ public partial class ConfigurationWindow : Window
     private void SteamAppId_Changed(object? sender, RoutedEventArgs e)
     {
         File.WriteAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt"), Steamappidtb.Text);
+        AppConstants.SteamAppId = Steamappidtb.Text;
     }
 
     private void LaunchOptions_Changed(object? sender, RoutedEventArgs e)
