@@ -1,17 +1,14 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="180"
-        x:Class="RadiumLauncher.Views.MessageBoxWindow"
-        Title="Message"
+        x:Class="RadiumLauncher.Views.ConfirmationWindow"
+        Title="Confirm"
         ExtendClientAreaToDecorationsHint="True"
         WindowDecorations="BorderOnly"
         Background="#101010"
         Width="350"
-        Height="200"
-        WindowStartupLocation="CenterOwner">
-
+        Height="250"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
     <Panel>
         <Border BorderBrush="#2D2D2D" BorderThickness="1" ZIndex="100" IsHitTestVisible="False" />
         <Panel IsHitTestVisible="False" ClipToBounds="False">
@@ -78,8 +75,7 @@
                 </Border>
             </Panel>
         </Panel>
-
-        <Grid RowDefinitions="40, *, 50">
+        <Grid RowDefinitions="40, *, 60">
             <Border Grid.Row="0"
                     x:Name="TitleBar"
                     BorderBrush="#2D2D2D"
@@ -90,10 +86,8 @@
                 <Grid ColumnDefinitions="Auto, *, Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                         <Image Width="18" Height="18" Source="/Assets/radium-icon.png" />
-                        <TextBlock Text="Notification" Foreground="White" VerticalAlignment="Center" FontSize="11"
-                                   FontWeight="Medium" />
+                        <TextBlock x:Name="WindowTitle" Text="Confirmation" Foreground="White" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" />
                     </StackPanel>
-
                     <Button Grid.Column="2"
                             Content="✕"
                             Click="CloseButton_Click"
@@ -105,25 +99,34 @@
                 </Grid>
             </Border>
 
-            <StackPanel Grid.Row="1" Margin="20" Spacing="10" VerticalAlignment="Center">
-                <TextBlock x:Name="TitleTextBlock" Text="Message Title" Foreground="White" FontSize="16" FontWeight="SemiBold" />
-                <TextBlock x:Name="ContentTextBlock" Text="Message Content"
+            <StackPanel Grid.Row="0" Margin="20, 60, 20, 60" Spacing="10" VerticalAlignment="Center">
+                <TextBlock x:Name="MessageText" Text="Message Content"
                            Foreground="#CCCCCC"
                            FontSize="13"
                            TextWrapping="Wrap" />
             </StackPanel>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10"
-                        Margin="0,0,20,0">
-                <Button Content="OK"
-                        Click="OkButton_Click"
-                        Width="80"
-                        Height="32"
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,0,20,10">
+                <Button x:Name="SecondaryButton"
+                        Click="SecondaryButton_Click"
+                        Width="120"
+                        Height="34"
+                        Content="No"
                         Background="#2D2D2D"
                         Foreground="White"
+                        CornerRadius="6"
                         HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        CornerRadius="4" />
+                        VerticalContentAlignment="Center" />
+                <Button x:Name="PrimaryButton"
+                        Click="PrimaryButton_Click"
+                        Width="120"
+                        Height="34"
+                        Content="Yes"
+                        Background="#24d81e"
+                        Foreground="Black"
+                        CornerRadius="6"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center" />
             </StackPanel>
         </Grid>
     </Panel>

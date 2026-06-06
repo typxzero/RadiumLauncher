@@ -12,7 +12,7 @@
         WindowDecorations="BorderOnly"
         Icon="/Assets/radium-icon.png"
         Title="RadiumLauncher"
-        Background="#101010"
+        Background="#000000"
         Width="800"
         Height="450"
         CanResize="True"
@@ -24,9 +24,25 @@
     <Window.Styles>
         <Style Selector="Button.MainAction">
             <Setter Property="Height" Value="60" />
-            <Setter Property="CornerRadius" Value="15" />
+            <Setter Property="CornerRadius" Value="18" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="#000000" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.MainAction:pointerover">
+            <Setter Property="Background" Value="#000000" />
         </Style>
 
         <Style Selector="Button.Ready">
@@ -51,7 +67,7 @@
         </Style>
 
         <Style Selector="Button.Unavailable">
-            <Setter Property="Background" Value="#2D2D2D" />
+            <Setter Property="Background" Value="#000000" />
             <Setter Property="Foreground" Value="#666666" />
             <Setter Property="CornerRadius" Value="15" />
             <Setter Property="IsHitTestVisible" Value="False" />
@@ -100,14 +116,14 @@
         </Style>
 
         <Style Selector="Button.Config">
-            <Setter Property="Background" Value="#2D2D2D" />
+            <Setter Property="Background" Value="#000000" />
             <Setter Property="Width" Value="60" />
             <Setter Property="Height" Value="60" />
             <Setter Property="CornerRadius" Value="15" />
             <Setter Property="Padding" Value="0" />
         </Style>
         <Style Selector="Button.Config:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="#3D3D3D" />
+            <Setter Property="Background" Value="#111111" />
         </Style>
 
         <Style Selector="ProgressBar.BlueProgress">
@@ -210,20 +226,69 @@
         </Grid>
 
         <Border BorderBrush="#2D2D2D" BorderThickness="1" ZIndex="100" IsHitTestVisible="False" />
-
         <Panel IsHitTestVisible="False" ClipToBounds="False">
-            <Border HorizontalAlignment="Center"
+            <Border Background="#000000"
+                    Width="900" Height="900"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Top"
-                    Margin="0,-250,0,0"
-                    Width="400"
-                    Height="400"
-                    CornerRadius="200"
-                    Background="#0df904"
-                    Opacity="0.6">
+                    Margin="-250,-350,0,0"
+                    CornerRadius="450"
+                    Opacity="0.8">
                 <Border.Effect>
-                    <BlurEffect Radius="500" />
+                    <BlurEffect Radius="150" />
                 </Border.Effect>
             </Border>
+            <Border Background="#000000"
+                    Width="700" Height="700"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,-300,-200,0"
+                    CornerRadius="350"
+                    Opacity="0.65">
+                <Border.Effect>
+                    <BlurEffect Radius="160" />
+                </Border.Effect>
+            </Border>
+            <Border x:Name="HomeBackgroundLayer"
+                    Background="#4424d8ff"
+                    Width="1000" Height="600"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,-200"
+                    CornerRadius="300"
+                    Opacity="0.45">
+                <Border.Effect>
+                    <BlurEffect Radius="170" />
+                </Border.Effect>
+                <Border.RenderTransform>
+                    <TranslateTransform />
+                </Border.RenderTransform>
+            </Border>
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="1200"
+                    Height="700"
+                    Background="#0000002f"
+                    CornerRadius="0"
+                    Opacity="0.4">
+                <Border.Effect>
+                    <BlurEffect Radius="100" />
+                </Border.Effect>
+            </Border>
+            <Panel IsHitTestVisible="False" ClipToBounds="False">
+                <Border HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,-250,0,0"
+                        Width="400"
+                        Height="400"
+                        CornerRadius="200"
+                        Background="#0df904"
+                        Opacity="0.6">
+                    <Border.Effect>
+                        <BlurEffect Radius="500" />
+                    </Border.Effect>
+                </Border>
+            </Panel>
         </Panel>
 
         <Grid RowDefinitions="50, *">
@@ -238,7 +303,7 @@
                 <Grid ColumnDefinitions="*, Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                         <Image Width="24" Height="24" Source="/Assets/radium-icon.png" />
-                        <Image Width="128" Height="24" Source="/Assets/radium-logo.png" />
+                        <Image Width="128" Height="24" Source="/Assets/radium-logo.png" Stretch="Uniform" />
                         <TextBlock Text="Launcher"
                                    Foreground="White"
                                    FontSize="12"
@@ -248,6 +313,13 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Button Content="Update"
+                            Background="Transparent"
+                            Foreground="#888888"
+                            Padding="8,4"
+                            IsVisible="{Binding ShowUpdateButton}"
+                            Command="{Binding OpenUpdateCommand}" />
+
                         <Button Content="-"
                                 Background="Transparent"
                                 Foreground="#888888"
@@ -268,13 +340,18 @@
             <ScrollViewer Grid.Row="1" x:Name="ContentScrollViewer" VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel Margin="20" Spacing="30">
-                    <StackPanel Spacing="20">
-                        <Image Source="{Binding MainLogo, FallbackValue={x:Null}, TargetNullValue={x:Null}}"
-                               Width="300" HorizontalAlignment="Center" />
+                    <StackPanel x:Name="HomeTabPanel" Spacing="30">
+                        <StackPanel Spacing="20">
+                        <Grid Width="300" HorizontalAlignment="Center" x:Name="HomeLogoGrid" RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TranslateTransform />
+                            </Grid.RenderTransform>
+                            <Image Source="{Binding MainLogo, FallbackValue={x:Null}, TargetNullValue={x:Null}}"
+                                   Width="300" HorizontalAlignment="Center" />
+                        </Grid>
 
                         <StackPanel Spacing="12">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
-
                                 <Panel Width="270">
                                     <StackPanel Orientation="Horizontal"
                                                 IsVisible="{Binding CurrentState, Converter={StaticResource EqualsConverter}, ConverterParameter={x:Static vm:LauncherState.Ready}}">
@@ -355,11 +432,13 @@
 
                                     <Grid Width="270" Height="60"
                                           IsVisible="{Binding CurrentState, Converter={StaticResource EqualsConverter}, ConverterParameter={x:Static vm:LauncherState.Downloading}}">
-                                        <Border Background="#2D2D2D" CornerRadius="15" />
+                                        <Border Background="#000000" CornerRadius="15" />
                                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                             <TextBlock Text="DOWNLOADING" Foreground="#666666" FontWeight="Bold"
                                                        FontSize="16" HorizontalAlignment="Center" LetterSpacing="1" />
                                             <TextBlock Text="{Binding ProgressDetails}" Foreground="#444444"
+                                                       FontSize="10" HorizontalAlignment="Center" />
+                                            <TextBlock Text="{Binding EtaText}" Foreground="#888888"
                                                        FontSize="10" HorizontalAlignment="Center" />
                                         </StackPanel>
                                         <ProgressBar Classes="BlueProgress" Value="{Binding DownloadProgress}"
@@ -368,7 +447,7 @@
 
                                     <Grid Width="270" Height="60"
                                           IsVisible="{Binding CurrentState, Converter={StaticResource EqualsConverter}, ConverterParameter={x:Static vm:LauncherState.Verifying}}">
-                                        <Border Background="#2D2D2D" CornerRadius="15" />
+                                        <Border Background="#000000" CornerRadius="15" />
                                         <TextBlock Text="VERIFYING" Foreground="#666666" FontWeight="Bold"
                                                    FontSize="16" VerticalAlignment="Center"
                                                    HorizontalAlignment="Center" LetterSpacing="1" />
@@ -377,7 +456,7 @@
 
                                     <Grid Width="270" Height="60"
                                           IsVisible="{Binding CurrentState, Converter={StaticResource EqualsConverter}, ConverterParameter={x:Static vm:LauncherState.Extracting}}">
-                                        <Border Background="#2D2D2D" CornerRadius="15" />
+                                        <Border Background="#000000" CornerRadius="15" />
                                         <TextBlock Text="EXTRACTING" Foreground="#666666" FontWeight="Bold"
                                                    FontSize="16" VerticalAlignment="Center"
                                                    HorizontalAlignment="Center" LetterSpacing="1" />
@@ -386,7 +465,7 @@
 
                                     <Grid Width="270" Height="60"
                                           IsVisible="{Binding CurrentState, Converter={StaticResource EqualsConverter}, ConverterParameter={x:Static vm:LauncherState.Patching}}">
-                                        <Border Background="#2D2D2D" CornerRadius="15" />
+                                        <Border Background="#000000" CornerRadius="15" />
                                         <TextBlock Text="PATCHING" Foreground="#666666" FontWeight="Bold" FontSize="16"
                                                    VerticalAlignment="Center" HorizontalAlignment="Center"
                                                    LetterSpacing="1" />
@@ -395,8 +474,9 @@
                                 </Panel>
 
                                 <Button Classes="Config" Click="ConfigButton_Click">
+                                    <!-- couldn't find old svg source so heres the new one https://www.svgrepo.com/svg/501352/settings -->
                                     <Path Fill="White"
-                                          Data="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.35 19.43,11.03L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.97 19.05,5.05L16.56,6.05C16.04,5.65 15.48,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.52,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.97 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11.03C4.53,11.35 4.5,12.33 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.95C7.96,18.35 8.52,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.48,18.67 16.04,18.34 16.56,17.95L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+                                          Data="M1703.534 960c0-41.788-3.84-84.48-11.633-127.172l210.184-182.174-199.454-340.856-265.186 88.433c-66.974-55.567-143.323-99.389-223.85-128.415L1158.932 0h-397.78L706.49 269.704c-81.43 29.138-156.423 72.282-223.962 128.414l-265.073-88.32L18 650.654l210.184 182.174C220.39 875.52 216.55 918.212 216.55 960s3.84 84.48 11.633 127.172L18 1269.346l199.454 340.856 265.186-88.433c66.974 55.567 143.322 99.389 223.85 128.415L761.152 1920h397.779l54.663-269.704c81.318-29.138 156.424-72.282 223.963-128.414l265.073 88.433 199.454-340.856-210.184-182.174c7.793-42.805 11.633-85.497 11.633-127.285m-743.492 395.294c-217.976 0-395.294-177.318-395.294-395.294 0-217.976 177.318-395.294 395.294-395.294 217.977 0 395.294 177.318 395.294 395.294 0 217.976-177.317 395.294-395.294 395.294"
                                           Width="24" Height="24" Stretch="Uniform" HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
                                 </Button>
@@ -419,6 +499,23 @@
                                 <TextBlock Text="{Binding OsVersion}" Foreground="#AAAAAA" FontSize="10"
                                            VerticalAlignment="Center" />
                             </StackPanel>
+
+                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12">
+                                <TextBlock Text="Announcements" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                                           Margin="10,0,0,0" />
+                                <Border Background="#50000000" CornerRadius="10" Padding="12">
+                                    <ItemsControl ItemsSource="{Binding Announcements}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding}"
+                                                           Foreground="#DDDDDD"
+                                                           FontSize="13"
+                                                           TextWrapping="Wrap"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </StackPanel>
                         </StackPanel>
                     </StackPanel>
 
@@ -439,7 +536,7 @@
                                             Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).MaximizePhotoCommand, FallbackValue={x:Null}}"
                                             CommandParameter="{Binding}">
                                         <Border Name="ImageRoot" CornerRadius="12" ClipToBounds="True"
-                                                Background="#222222" Height="140">
+                                                Background="#000000" Width="243" Height="140">
                                             <Panel>
                                                 <Image
                                                     Source="{Binding Bitmap, FallbackValue={x:Null}, TargetNullValue={x:Null}}"
@@ -507,8 +604,25 @@
                         </ItemsControl>
                     </StackPanel>
                 </StackPanel>
-            </ScrollViewer>
+        </StackPanel>
+    </ScrollViewer>
         </Grid>
+
+        <Border IsVisible="{Binding ShowUpdatePopup}" Background="#AA000000" ZIndex="600">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Background="#111111" CornerRadius="12" Padding="20" Width="420">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="A new launcher version is available" Foreground="White" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Version: {Binding LatestVersion}" Foreground="#CCCCCC" />
+                        <TextBlock Text="Would you like to open the release page to update now?" Foreground="#AAAAAA" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Background="#24d81e" Foreground="Black" Width="90" Command="{Binding OpenUpdateCommand}">Update</Button>
+                            <Button Background="#000000" Foreground="#CCCCCC" Width="90" Command="{Binding DismissUpdateCommand}">No</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
 
         <Border Classes="PhotoViewerOverlay" Classes.Visible="{Binding IsPhotoMaximized}" Background="Black">
             <Panel>
@@ -530,7 +644,7 @@
                         Command="{Binding CloseMaximizedPhotoCommand}" />
 
                 <Grid Margin="40">
-                    <Border CornerRadius="12" ClipToBounds="True" Background="#1A1A1A" BoxShadow="0 10 40 5 #AA000000"
+                    <Border CornerRadius="12" ClipToBounds="True" Background="#000000" BoxShadow="0 10 40 5 #AA000000"
                             HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Panel>
                             <Image

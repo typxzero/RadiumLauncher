@@ -14,19 +14,70 @@
 
     <Panel>
         <Border BorderBrush="#2D2D2D" BorderThickness="1" ZIndex="100" IsHitTestVisible="False" />
-        <Canvas IsHitTestVisible="False">
-            <Border Canvas.Left="100"
-                    Canvas.Top="-150"
-                    Width="200"
-                    Height="200"
-                    CornerRadius="100"
-                    Background="#0df904"
-                    Opacity="0.4">
+        <Panel IsHitTestVisible="False" ClipToBounds="False">
+            <Border Background="#000000"
+                    Width="450" Height="450"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Margin="-250,-350,0,0"
+                    CornerRadius="450"
+                    Opacity="0.8">
                 <Border.Effect>
-                    <BlurEffect Radius="300" />
+                    <BlurEffect Radius="150" />
                 </Border.Effect>
             </Border>
-        </Canvas>
+            <Border Background="#000000"
+                    Width="350" Height="350"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Margin="0,-300,-200,0"
+                    CornerRadius="350"
+                    Opacity="0.65">
+                <Border.Effect>
+                    <BlurEffect Radius="160" />
+                </Border.Effect>
+            </Border>
+            <Border x:Name="HomeBackgroundLayer"
+                    Background="#4424d8ff"
+                    Width="500" Height="300"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom"
+                    Margin="0,0,0,-200"
+                    CornerRadius="300"
+                    Opacity="0.45">
+                <Border.Effect>
+                    <BlurEffect Radius="170" />
+                </Border.Effect>
+                <Border.RenderTransform>
+                    <TranslateTransform />
+                </Border.RenderTransform>
+            </Border>
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Width="600"
+                    Height="350"
+                    Background="#0000002f"
+                    CornerRadius="0"
+                    Opacity="0.4">
+                <Border.Effect>
+                    <BlurEffect Radius="100" />
+                </Border.Effect>
+            </Border>
+            <Panel IsHitTestVisible="False" ClipToBounds="False">
+                <Border HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,-250,0,0"
+                        Width="250"
+                        Height="250"
+                        CornerRadius="200"
+                        Background="#0df904"
+                        Opacity="0.6">
+                    <Border.Effect>
+                        <BlurEffect Radius="500" />
+                    </Border.Effect>
+                </Border>
+            </Panel>
+        </Panel>
 
         <Grid RowDefinitions="40, *">
             <Border Grid.Row="0"
@@ -54,20 +105,53 @@
                 </Grid>
             </Border>
 
-            <StackPanel Grid.Row="1" Margin="20" Spacing="15">
-                <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="15" Margin="20, 20, 20, 20">
+                    <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
 
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
-                    <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                             CornerRadius="4" TextChanged="ProtonPath_Changed" />
+                    <StackPanel x:Name="ProtonOption" Spacing="5" IsVisible="False">
+                        <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="ProtonPath_Changed" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="LaunchOptions_Changed" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="8">
+                        <Button x:Name="UninstallButton"
+                                Content="Uninstall Radium"
+                                Click="UninstallButton_Click"
+                                Background="#2D2D2D"
+                                Foreground="White"
+                                CornerRadius="8"
+                                Padding="10,8"
+                                HorizontalAlignment="Stretch" />
+                        <TextBlock Text="Only removes the launcher's Radium installation."
+                                   Foreground="#888888" FontSize="11" TextWrapping="Wrap" />
+                    </StackPanel>
+                    
+                    <Expander x:Name="AdvancedOptions" Header="Advanced" IsExpanded="False">
+                        <StackPanel Spacing="10" Margin="0,10,0,0">
+                            <TextBlock Text="Custom Batch File Paths" Foreground="White" FontSize="13" FontWeight="SemiBold" />
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Screen Mode Batch File" Foreground="#888888" FontSize="12" />
+                                <TextBox x:Name="ScreenBatchFileTb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="ScreenBatchFile_Changed" />
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="VR Mode Batch File" Foreground="#888888" FontSize="12" />
+                                <TextBox x:Name="VrBatchFileTb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="VrBatchFile_Changed" />
+                            </StackPanel>
+                            <TextBlock Text="Enter an absolute or launcher-relative .bat file to use for custom launches. The launcher default install is still preferred." 
+                                       Foreground="#888888" FontSize="11" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Expander>
                 </StackPanel>
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
-                    <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                             CornerRadius="4" TextChanged="LaunchOptions_Changed" />
-                </StackPanel>
-            </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Panel>
 </Window>
