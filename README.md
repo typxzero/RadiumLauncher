@@ -1,8 +1,14 @@
 <div align="center">
 
 # RadiumLauncher
-
 **Fork Branch for RadiumLauncher made originally by typxzero**
+
+
+An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
+
+![Preview](Assets/1.png)
+
+</div>
 
 ## v1.1.0 Update for RadiumLauncher is here !!
 - Adds Menu Music (produced by Hollotone)
@@ -12,13 +18,7 @@
 - UI Changes
 - Credits Tab
 - Download Information
-- Announcements tab that is left empty because i don't own this launcher
-
-An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
-
-![Preview](Assets/1.png)
-
-</div>
+- Announcements tab that is left empty because i don't own this launcher****
 
 ## OS Compatibility
 
