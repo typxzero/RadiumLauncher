@@ -29,5 +29,5 @@ Visit the latest release page for the download: [Latest Release](https://github.
 
 ## ⚠️ Warning
 
-We are able to change download URLs automatically at any time.
+We are able to change download URLs at any time.
 You should check [RadiumLauncherFiles](https://github.com/typxzero/RadiumLauncherFiles) before updating or applying patches through the launcher.
