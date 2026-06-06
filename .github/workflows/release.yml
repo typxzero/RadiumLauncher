@@ -36,7 +36,7 @@ jobs:
         run: dotnet restore
 
       - name: Publish App
-        run: dotnet publish -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish/${{ matrix.target }}
+        run: dotnet publish -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish/${{ matrix.target }}
 
       - name: Archive Windows
         if: matrix.target == 'windows'
