@@ -327,6 +327,13 @@
                                 Padding="8,4"
                                 Click="MusicToggleButton_Click" />
 
+                        <Button Content="Update"
+                            Background="Transparent"
+                            Foreground="#888888"
+                            Padding="8,4"
+                            IsVisible="{Binding ShowUpdateButton}"
+                            Command="{Binding OpenUpdateCommand}" />
+
                         <Button Content="-"
                                 Background="Transparent"
                                 Foreground="#888888"
@@ -659,6 +666,22 @@
         </StackPanel>
     </ScrollViewer>
         </Grid>
+
+        <Border IsVisible="{Binding ShowUpdatePopup}" Background="#AA000000" ZIndex="600">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Background="#111111" CornerRadius="12" Padding="20" Width="420">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="A new launcher version is available" Foreground="White" FontSize="16" FontWeight="Bold" />
+                        <TextBlock Text="Version: {Binding LatestVersion}" Foreground="#CCCCCC" />
+                        <TextBlock Text="Would you like to open the release page to update now?" Foreground="#AAAAAA" TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                            <Button Background="#24d81e" Foreground="Black" Width="90" Command="{Binding OpenUpdateCommand}">Update</Button>
+                            <Button Background="#000000" Foreground="#CCCCCC" Width="90" Command="{Binding DismissUpdateCommand}">No</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
 
         <Border Classes="PhotoViewerOverlay" Classes.Visible="{Binding IsPhotoMaximized}" Background="Black">
             <Panel>

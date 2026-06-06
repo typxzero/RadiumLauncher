@@ -7,6 +7,10 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RadiumLauncher.Models;
+using RadiumLauncher.Services;
+using System.Net.Http;
+using System.Text.Json;
+using System.Diagnostics;
 
 namespace RadiumLauncher.ViewModels;
 
@@ -55,6 +59,17 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private FeedItem? _maximizedPhoto;
     [ObservableProperty] private bool _isPhotoMaximized;
 
+    [ObservableProperty] private bool _isUpdateAvailable;
+    [ObservableProperty] private string? _latestVersion;
+    [ObservableProperty] private string? _updateUrl;
+    [ObservableProperty] private bool _showUpdateButton;
+    [ObservableProperty] private bool _showUpdatePopup;
+
+    public MainWindowViewModel()
+    {
+        _ = CheckForUpdatesAsync();
+    }
+
     [RelayCommand]
     private void SetLaunchMode(string mode)
     {
@@ -78,5 +93,54 @@ public partial class MainWindowViewModel : ViewModelBase
         IsPhotoMaximized = false;
         await Task.Delay(300);
         MaximizedPhoto = null;
+    }
+
+    private async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var entry = System.Reflection.Assembly.GetEntryAssembly();
+            var current = entry?.GetName().Version?.ToString() ?? "0.0.0";
+            var svc = new UpdateService();
+            var (available, latest, url) = await svc.CheckLatestReleaseAsync(current);
+            if (available)
+            {
+                IsUpdateAvailable = true;
+                LatestVersion = latest;
+                UpdateUrl = url;
+                ShowUpdatePopup = true;
+                ShowUpdateButton = false;
+            }
+            else
+            {
+                IsUpdateAvailable = false;
+                ShowUpdatePopup = false;
+                ShowUpdateButton = false;
+            }
+        }
+        catch
+        {
+            // ignore failures
+        }
+    }
+
+    [RelayCommand]
+    private void OpenUpdate()
+    {
+        if (string.IsNullOrWhiteSpace(UpdateUrl)) return;
+        try
+        {
+            Process.Start(new ProcessStartInfo(UpdateUrl) { UseShellExecute = true });
+        }
+        catch
+        {
+        }
+    }
+
+    [RelayCommand]
+    private void DismissUpdate()
+    {
+        ShowUpdatePopup = false;
+        ShowUpdateButton = true;
     }
 }

@@ -5,6 +5,10 @@ namespace RadiumLauncher.Models;
 
 public static class AppConstants
 {
+    // The GitHub repository that hosts releases in the format "owner/repo".
+    // Defaulting to the original repo; change to your fork if you prefer updates from there.
+    public const string GitHubRepo = "typxzero/RadiumLauncher";
+
     public static string AppDataDirectory
     {
         get
