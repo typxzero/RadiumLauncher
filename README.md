@@ -1,6 +1,8 @@
 <div align="center">
 
 # RadiumLauncher
+**Fork Branch for RadiumLauncher made originally by typxzero**
+
 
 An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
@@ -8,19 +10,31 @@ An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
 </div>
 
+## v1.1.0 Update for RadiumLauncher is here !!
+- Adds Menu Music (produced by Hollotone)
+- New settings options
+   - Volume Control
+   - Advanced tab containing custom Batch File paths (for users who don't want to reinstall radium)
+   - Radium Uninstall capabilities
+- UI Changes
+- Credits Tab
+- Download Information
+- Announcements tab that is left empty because i don't own this launcher****
+
 ## OS Compatibility
 
 | Operating System | Compatibility |
 | :--- | :--- |
 | Windows 10/11 | ✅ Compatible |
 | Linux | ✅ Compatible |
-| macOS | ❌ Uncompatible |
+| macOS | ❌ Incompatible |
 
 ## Features
 - Automatic updates
 - Automatic patch application
 - Integrated community feed
 - Custom launch options
+- Custom Batch file setup for externally installed Radium
 - Linux support through Proton
 
 ## Download
