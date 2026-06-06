@@ -55,8 +55,8 @@
             </Border>
 
             <StackPanel Grid.Row="1" Margin="20" Spacing="10" VerticalAlignment="Center">
-                <TextBlock x:Name="Title" Text="Message Title" Foreground="White" FontSize="16" FontWeight="SemiBold" />
-                <TextBlock x:Name="Content" Text="Message Content"
+                <TextBlock x:Name="TitleTextBlock" Text="Message Title" Foreground="White" FontSize="16" FontWeight="SemiBold" />
+                <TextBlock x:Name="ContentTextBlock" Text="Message Content"
                            Foreground="#CCCCCC"
                            FontSize="13"
                            TextWrapping="Wrap" />

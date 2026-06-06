@@ -9,11 +9,16 @@ public partial class MessageBoxWindow : Window
 {
     private readonly Action? _callback;
 
-    public MessageBoxWindow(string title, string content, Action? callback)
+    public MessageBoxWindow()
     {
         InitializeComponent();
-        this.GetControl<TextBlock>("Title").Text = title;
-        this.GetControl<TextBlock>("Content").Text = content;
+    }
+
+    public MessageBoxWindow(string title, string content, Action? callback)
+        : this()
+    {
+        this.GetControl<TextBlock>("TitleTextBlock").Text = title;
+        this.GetControl<TextBlock>("ContentTextBlock").Text = content;
         _callback = callback;
     }
 

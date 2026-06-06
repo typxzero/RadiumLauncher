@@ -54,20 +54,60 @@
                 </Grid>
             </Border>
 
-            <StackPanel Grid.Row="1" Margin="20" Spacing="15">
-                <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
+            <ScrollViewer Grid.Row="1" Margin="20" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="15">
+                    <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
 
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
-                    <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                             CornerRadius="4" TextChanged="ProtonPath_Changed" />
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="ProtonPath_Changed" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="LaunchOptions_Changed" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Menu Music Volume" Foreground="#888888" FontSize="12" />
+                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                            <Slider x:Name="MusicVolumeSlider" Minimum="0" Maximum="100" ValueChanged="MusicVolumeSlider_Changed" Width="220" />
+                            <TextBlock x:Name="MusicVolumeValueText" Text="100%" Foreground="White" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Expander Header="Advanced" IsExpanded="False">
+                        <StackPanel Spacing="10" Margin="0,10,0,0">
+                            <TextBlock Text="Custom Batch File Paths" Foreground="White" FontSize="13" FontWeight="SemiBold" />
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Screen Mode Batch File" Foreground="#888888" FontSize="12" />
+                                <TextBox x:Name="ScreenBatchFileTb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="ScreenBatchFile_Changed" />
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="VR Mode Batch File" Foreground="#888888" FontSize="12" />
+                                <TextBox x:Name="VrBatchFileTb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="VrBatchFile_Changed" />
+                            </StackPanel>
+                            <TextBlock Text="Enter an absolute or launcher-relative .bat file to use for custom launches. The launcher default install is still preferred." 
+                                       Foreground="#888888" FontSize="11" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Expander>
+
+                    <StackPanel Spacing="8">
+                        <Button x:Name="UninstallButton"
+                                Content="Uninstall Downloaded Radium"
+                                Click="UninstallButton_Click"
+                                Background="#2D2D2D"
+                                Foreground="White"
+                                CornerRadius="8"
+                                Padding="10,8"
+                                HorizontalAlignment="Stretch" />
+                        <TextBlock Text="Removes only the Radium install downloaded by this launcher."
+                                   Foreground="#888888" FontSize="11" TextWrapping="Wrap" />
+                    </StackPanel>
                 </StackPanel>
-                <StackPanel Spacing="5">
-                    <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
-                    <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                             CornerRadius="4" TextChanged="LaunchOptions_Changed" />
-                </StackPanel>
-            </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Panel>
 </Window>

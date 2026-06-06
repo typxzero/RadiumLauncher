@@ -40,9 +40,14 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private LauncherState _currentState = LauncherState.Unavailable;
     [ObservableProperty] private double _downloadProgress;
     [ObservableProperty] private string _progressDetails = string.Empty;
+    [ObservableProperty] private string _etaText = string.Empty;
     [ObservableProperty] private string? _infoResponse;
+    [ObservableProperty] private string _screenModeBatchFile = "RecRoom_ScreenMode.bat";
+    [ObservableProperty] private string _vrModeBatchFile = "RecRoom_VR.bat";
 
     public string GameFolder { get; set; } = string.Empty;
+
+    public ObservableCollection<string> Announcements { get; } = new();
     public Process? GameProcess { get; set; }
 
     public ObservableCollection<FeedItem> CommunityMediaItems { get; } = new();

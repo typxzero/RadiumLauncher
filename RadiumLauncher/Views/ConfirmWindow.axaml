@@ -1,0 +1,67 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="RadiumLauncher.Views.ConfirmWindow"
+        Title="Confirm"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowDecorations="BorderOnly"
+        Background="#101010"
+        Width="400"
+        Height="220"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+    <Panel>
+        <Border BorderBrush="#2D2D2D" BorderThickness="1" ZIndex="100" IsHitTestVisible="False" />
+        <Grid RowDefinitions="40, *, 60">
+            <Border Grid.Row="0"
+                    x:Name="TitleBar"
+                    BorderBrush="#2D2D2D"
+                    BorderThickness="0,0,0,1"
+                    Padding="10,0"
+                    Background="Transparent"
+                    PointerPressed="TitleBar_PointerPressed">
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Image Width="18" Height="18" Source="/Assets/radium-icon.png" />
+                        <TextBlock x:Name="WindowTitle" Text="Confirm" Foreground="White" VerticalAlignment="Center" FontSize="11" FontWeight="Medium" />
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            Content="✕"
+                            Click="CloseButton_Click"
+                            Background="Transparent"
+                            Foreground="#888888"
+                            FontSize="14"
+                            Padding="8,4"
+                            VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="1" Margin="20" Spacing="10" VerticalAlignment="Center">
+                <TextBlock x:Name="MessageText" Text="Message content goes here"
+                           Foreground="#CCCCCC"
+                           FontSize="13"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,0,20,10">
+                <Button x:Name="SecondaryButton"
+                        Click="SecondaryButton_Click"
+                        Width="120"
+                        Height="34"
+                        Background="#2D2D2D"
+                        Foreground="White"
+                        CornerRadius="6"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center" />
+                <Button x:Name="PrimaryButton"
+                        Click="PrimaryButton_Click"
+                        Width="120"
+                        Height="34"
+                        Background="#24d81e"
+                        Foreground="Black"
+                        CornerRadius="6"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center" />
+            </StackPanel>
+        </Grid>
+    </Panel>
+</Window>

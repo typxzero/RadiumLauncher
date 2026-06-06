@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -12,10 +13,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using RadiumLauncher.Models;
+using RadiumLauncher.Services;
 using RadiumLauncher.ViewModels;
 
 namespace RadiumLauncher.Views;
@@ -25,8 +28,20 @@ public partial class MainWindow : Window
     private readonly HttpClient _httpClient = new HttpClient();
     private int _imagesLoaded;
     private bool _isLoadingFeed;
+    private const double HomeLogoMotionTimerIntervalMs = 30;
+    private const double HomeLogoMotionSpeed = 2.0; // Increase for faster motion, decrease for slower
+    private const double HomeLogoMotionLoopDuration = 5.0; // seconds per full loop
+    private const double HomeLogoMotionAmplitudeX = 2.0;
+    private const double HomeLogoMotionAmplitudeY = 0.8;
+    private const string SettingsFileName = "launcher-settings.json";
+    private const string AnnouncementsUrl = "https://raw.githubusercontent.com/typxzero/RadiumLauncherFiles/refs/heads/main/LatestNews.txt";
+
     private readonly DispatcherTimer? _inactivityTimer;
+    private readonly DispatcherTimer? _titleLogoAnimationTimer;
     private bool _isInitialized;
+    private bool _isMusicMuted;
+    private double _titleLogoAnimationTime;
+    private MainWindowViewModel? _currentViewModel;
     private readonly string _configFolder = Path.Combine(AppConstants.AppDataDirectory, "Configuration");
     private string? _patchOnline;
     private string? _patchLocal;
@@ -35,6 +50,24 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "typxzero/RadiumLauncher");
+
+        Closed += (_, _) =>
+        {
+            _titleLogoAnimationTimer?.Stop();
+            StopBackgroundMusic();
+        };
+        Opened += (_, _) =>
+        {
+            if (!_isMusicMuted)
+            {
+                PlayBackgroundMusic();
+            }
+        };
+        ShowHomeTab();
+
+        _titleLogoAnimationTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(HomeLogoMotionTimerIntervalMs) };
+        _titleLogoAnimationTimer.Tick += TitleLogoAnimationTimer_Tick;
+        _titleLogoAnimationTimer.Start();
 
         DataContextChanged += MainWindow_DataContextChanged;
 
@@ -45,15 +78,134 @@ public partial class MainWindow : Window
         _inactivityTimer.Tick += InactivityTimer_Tick;
         _inactivityTimer.Start();
 
-        PointerMoved += (_, _) => ResetInactivity();
+        PointerMoved += MainWindow_PointerMoved;
         PointerPressed += (_, _) => ResetInactivity();
         KeyDown += (_, _) => ResetInactivity();
+    }
+
+    private void MainWindow_PointerMoved(object? sender, PointerEventArgs e)
+    {
+        ResetInactivity();
+        if (HomeBackgroundLayer?.RenderTransform is TranslateTransform backgroundTransform)
+        {
+            var position = e.GetPosition(this);
+            var centerX = Bounds.Width / 2;
+            var centerY = Bounds.Height / 2;
+            if (centerX > 0 && centerY > 0)
+            {
+                backgroundTransform.X = (position.X - centerX) / centerX * 18;
+                backgroundTransform.Y = (position.Y - centerY) / centerY * 12;
+            }
+        }
     }
 
     private void ResetInactivity()
     {
         _inactivityTimer?.Stop();
         _inactivityTimer?.Start();
+    }
+
+    private void PlayBackgroundMusic()
+    {
+        try
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Music", "theme.mp3");
+            if (File.Exists(path))
+            {
+                AudioService.Play(path);
+            }
+            else
+            {
+                Debug.WriteLine($"Background music file not found: {path}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Background music failed to start: {ex}");
+        }
+    }
+
+    private void StopBackgroundMusic()
+    {
+        try
+        {
+            AudioService.Stop();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Background music failed to stop: {ex}");
+        }
+    }
+
+    private void TitleLogoAnimationTimer_Tick(object? sender, EventArgs e)
+    {
+        _titleLogoAnimationTime += HomeLogoMotionTimerIntervalMs / 1000.0 * HomeLogoMotionSpeed;
+        if (_titleLogoAnimationTime > HomeLogoMotionLoopDuration)
+        {
+            _titleLogoAnimationTime -= HomeLogoMotionLoopDuration;
+        }
+
+        var progress = _titleLogoAnimationTime / HomeLogoMotionLoopDuration;
+        var angle = progress * Math.PI * 2;
+        var motionX = Math.Sin(angle) * HomeLogoMotionAmplitudeX;
+        var motionY = Math.Cos(angle) * HomeLogoMotionAmplitudeY;
+
+        if (HomeLogoGrid?.RenderTransform is TranslateTransform homeMotion)
+        {
+            homeMotion.X = motionX;
+            homeMotion.Y = motionY;
+        }
+    }
+
+    private void MusicToggleButton_Click(object? sender, RoutedEventArgs e)
+    {
+        _isMusicMuted = !_isMusicMuted;
+        MusicToggleButton.Content = _isMusicMuted ? "🔇" : "🔊";
+
+        if (_isMusicMuted)
+        {
+            AudioService.Stop();
+        }
+        else
+        {
+            PlayBackgroundMusic();
+        }
+    }
+
+    private void ShowHomeTab()
+    {
+        if (HomeTabButton is null || CreditsTabButton is null || HomeTabPanel is null || CreditsTabPanel is null)
+            return;
+
+        HomeTabPanel.IsVisible = true;
+        CreditsTabPanel.IsVisible = false;
+        HomeTabButton.Background = new SolidColorBrush(Color.Parse("#24d81e"));
+        HomeTabButton.Foreground = Brushes.Black;
+        CreditsTabButton.Background = new SolidColorBrush(Color.Parse("#2D2D2D"));
+        CreditsTabButton.Foreground = new SolidColorBrush(Color.Parse("#CCCCCC"));
+    }
+
+    private void ShowCreditsTab()
+    {
+        if (HomeTabButton is null || CreditsTabButton is null || HomeTabPanel is null || CreditsTabPanel is null)
+            return;
+
+        HomeTabPanel.IsVisible = false;
+        CreditsTabPanel.IsVisible = true;
+        HomeTabButton.Background = new SolidColorBrush(Color.Parse("#2D2D2D"));
+        HomeTabButton.Foreground = new SolidColorBrush(Color.Parse("#CCCCCC"));
+        CreditsTabButton.Background = new SolidColorBrush(Color.Parse("#24d81e"));
+        CreditsTabButton.Foreground = Brushes.Black;
+    }
+
+    private void HomeTabButton_Click(object? sender, RoutedEventArgs e)
+    {
+        ShowHomeTab();
+    }
+
+    private void CreditsTabButton_Click(object? sender, RoutedEventArgs e)
+    {
+        ShowCreditsTab();
     }
 
     private async void InactivityTimer_Tick(object? sender, EventArgs e)
@@ -82,18 +234,155 @@ public partial class MainWindow : Window
             if (DataContext is MainWindowViewModel vm && !_isInitialized)
             {
                 _isInitialized = true;
+                _currentViewModel?.PropertyChanged -= Vm_PropertyChanged;
+                _currentViewModel = vm;
+                _currentViewModel.PropertyChanged += Vm_PropertyChanged;
+
                 vm.GameFolder = Path.Combine(AppConstants.AppDataDirectory, "Radium_PC");
 
+                LoadLaunchMode(vm);
+                await CheckForExistingInstall(vm);
                 LoadAssets(vm);
 
                 await InitializeLauncher(vm);
                 await LoadFeed();
+                await LoadAnnouncements(vm);
             }
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Error in MainWindow_DataContextChanged: {ex}");
         }
+    }
+
+    private void Vm_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not MainWindowViewModel vm) return;
+        if (e.PropertyName == nameof(vm.SelectedLaunchMode))
+        {
+            SaveSettings(vm);
+        }
+    }
+
+    private void LoadLaunchMode(MainWindowViewModel vm)
+    {
+        try
+        {
+            Directory.CreateDirectory(_configFolder);
+            string settingsPath = Path.Combine(_configFolder, SettingsFileName);
+            if (!File.Exists(settingsPath)) return;
+
+            var json = File.ReadAllText(settingsPath);
+            var settings = JsonSerializer.Deserialize<LauncherSettings>(json);
+            if (settings == null) return;
+
+            if (!string.IsNullOrWhiteSpace(settings.SelectedLaunchMode))
+            {
+                vm.SelectedLaunchMode = settings.SelectedLaunchMode;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.ScreenModeBatchFile))
+            {
+                vm.ScreenModeBatchFile = settings.ScreenModeBatchFile;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.VrModeBatchFile))
+            {
+                vm.VrModeBatchFile = settings.VrModeBatchFile;
+            }
+
+            AudioService.SetVolume(settings.MusicVolume / 100f);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to load launcher settings: {ex}");
+        }
+    }
+
+    private void SaveSettings(MainWindowViewModel vm)
+    {
+        try
+        {
+            Directory.CreateDirectory(_configFolder);
+            string settingsPath = Path.Combine(_configFolder, SettingsFileName);
+            var settings = new LauncherSettings();
+            if (File.Exists(settingsPath))
+            {
+                var json = File.ReadAllText(settingsPath);
+                settings = JsonSerializer.Deserialize<LauncherSettings>(json) ?? settings;
+            }
+
+            settings.SelectedLaunchMode = vm.SelectedLaunchMode;
+            settings.GameFolder = vm.GameFolder;
+            settings.ScreenModeBatchFile = vm.ScreenModeBatchFile;
+            settings.VrModeBatchFile = vm.VrModeBatchFile;
+            File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to save launcher settings: {ex}");
+        }
+    }
+
+    private async Task LoadAnnouncements(MainWindowViewModel vm)
+    {
+        try
+        {
+            var res = await _httpClient.GetStringAsync(AnnouncementsUrl);
+            PopulateAnnouncements(vm, res);
+        }
+        catch
+        {
+            if (!string.IsNullOrEmpty(vm.InfoResponse))
+            {
+                var extraText = string.Join("\n", vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries).Skip(4));
+                PopulateAnnouncements(vm, extraText);
+            }
+            else
+            {
+                PopulateAnnouncements(vm, string.Empty);
+            }
+        }
+    }
+
+    private async Task CheckForExistingInstall(MainWindowViewModel vm)
+    {
+        var defaultFolder = Path.Combine(AppConstants.AppDataDirectory, "Radium_PC");
+        vm.GameFolder = defaultFolder;
+        await Task.CompletedTask;
+    }
+
+    private void PopulateAnnouncements(MainWindowViewModel vm, string content)
+    {
+        vm.Announcements.Clear();
+        var lines = content.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Trim())
+            .Where(line => !string.IsNullOrEmpty(line));
+
+        foreach (var line in lines)
+        {
+            vm.Announcements.Add(line);
+        }
+
+        if (vm.Announcements.Count == 0)
+        {
+            vm.Announcements.Add("No announcements available right now.");
+        }
+    }
+
+    private static string FormatTimeSpan(TimeSpan span)
+    {
+        if (span.TotalHours >= 1)
+        {
+            return $"{(int)span.TotalHours}h {span.Minutes}m";
+        }
+
+        if (span.TotalMinutes >= 1)
+        {
+            return $"{(int)span.TotalMinutes}m {span.Seconds}s";
+        }
+
+        return $"{span.Seconds}s";
     }
 
     private async Task InitializeLauncher(MainWindowViewModel vm)
@@ -142,13 +431,15 @@ public partial class MainWindow : Window
                         }
                         else
                         {
-                            // probably failed to get the online patch, but we'll let the user continue anyway
                             vm.CurrentState = LauncherState.Ready;
                         }
                     }
                     else vm.CurrentState = LauncherState.NeedsUpdate;
                 }
-                else vm.CurrentState = LauncherState.NeedsDownload;
+                else
+                {
+                    vm.CurrentState = LauncherState.NeedsDownload;
+                }
             }
             catch
             {
@@ -204,19 +495,35 @@ public partial class MainWindow : Window
                     int read;
                     DateTime startTime = DateTime.Now;
 
-                    while ((read = await content.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            while ((read = await content.ReadAsync(buffer, 0, buffer.Length)) > 0)
                     {
                         await file.WriteAsync(buffer, 0, read);
                         totalRead += read;
 
+                        double elapsed = (DateTime.Now - startTime).TotalSeconds;
+                        double speed = elapsed > 0 ? (totalRead / 1024.0 / 1024.0) / elapsed : 0;
+
                         if (totalBytes != -1)
                         {
                             vm.DownloadProgress = (double)totalRead / totalBytes * 100;
-                            double elapsed = (DateTime.Now - startTime).TotalSeconds;
-                            double speed = elapsed > 0 ? (totalRead / 1024.0 / 1024.0) / elapsed : 0;
-
                             vm.ProgressDetails =
-                                $"{totalRead / 1024 / 1024}MB / {totalBytes / 1024 / 1024}MB | {speed:F1} MB/S";
+                                $"{totalRead / 1024.0 / 1024.0:F1}MB / {totalBytes / 1024.0 / 1024.0:F1}MB | {speed:F1} MB/s";
+
+                            long remainingBytes = totalBytes - totalRead;
+                            if (remainingBytes > 0 && speed > 0)
+                            {
+                                var eta = TimeSpan.FromSeconds(remainingBytes / 1024.0 / 1024.0 / speed);
+                                vm.EtaText = $"ETA: {FormatTimeSpan(eta)}";
+                            }
+                            else
+                            {
+                                vm.EtaText = "ETA: calculating...";
+                            }
+                        }
+                        else
+                        {
+                            vm.ProgressDetails = $"Downloaded {totalRead / 1024.0 / 1024.0:F1}MB";
+                            vm.EtaText = "ETA: calculating...";
                         }
                     }
                 }
@@ -236,6 +543,8 @@ public partial class MainWindow : Window
             }
 
             vm.CurrentState = LauncherState.Extracting;
+            vm.EtaText = string.Empty;
+            vm.ProgressDetails = string.Empty;
 
             string clientFolder = Path.Combine(vm.GameFolder, "client");
             if (Directory.Exists(clientFolder))
@@ -334,13 +643,21 @@ public partial class MainWindow : Window
         string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
         if (info.Length < 4) return;
 
-        string gameDirectory = Path.Combine(vm.GameFolder, info[2].Trim());
-        string gameExePath = Path.Combine(gameDirectory, info[3].Trim());
-        if (!File.Exists(gameExePath))
+        string? batchPath = GetCustomBatchFilePath(vm);
+        if (!string.IsNullOrEmpty(batchPath) && File.Exists(batchPath))
+        {
+            await StartProcess(batchPath, vm, isBatch: true);
+            return;
+        }
+
+        string? gameExePath = GetGameExecutablePath(vm, info);
+        if (string.IsNullOrEmpty(gameExePath) || !File.Exists(gameExePath))
         {
             _ = new MessageBoxWindow("Missing Executable", "Could not find the Radium executable.", null);
             return;
         }
+
+        string gameDirectory = Path.GetDirectoryName(gameExePath) ?? vm.GameFolder;
 
         string appId = await File.ReadAllTextAsync(Path.Combine(gameDirectory, "steam_appid.txt"));
         var pInfo = new ProcessStartInfo
@@ -404,6 +721,93 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             _ = new MessageBoxWindow("Launch Failed", ex.Message, null);
+        }
+    }
+
+    private string? GetCustomBatchFilePath(MainWindowViewModel vm)
+    {
+        string batchFile = vm.SelectedLaunchMode == "VR" ? vm.VrModeBatchFile : vm.ScreenModeBatchFile;
+        if (string.IsNullOrWhiteSpace(batchFile))
+        {
+            return null;
+        }
+
+        if (Path.IsPathRooted(batchFile))
+        {
+            return batchFile;
+        }
+
+        string relativePath = Path.Combine(vm.GameFolder, batchFile);
+        if (File.Exists(relativePath))
+        {
+            return relativePath;
+        }
+
+        string localPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, batchFile);
+        return File.Exists(localPath) ? localPath : null;
+    }
+
+    private async Task StartProcess(string path, MainWindowViewModel vm, bool isBatch = false)
+    {
+        try
+        {
+            var pInfo = new ProcessStartInfo
+            {
+                FileName = isBatch ? "cmd.exe" : path,
+                Arguments = isBatch ? $"/c \"{path}\"" : string.Empty,
+                WorkingDirectory = Path.GetDirectoryName(path) ?? vm.GameFolder,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+
+            var p = Process.Start(pInfo);
+            if (p != null)
+            {
+                vm.GameProcess = p;
+                vm.CurrentState = LauncherState.Running;
+                p.EnableRaisingEvents = true;
+                p.Exited += (_, _) => Dispatcher.UIThread.Post(() =>
+                {
+                    vm.CurrentState = LauncherState.Ready;
+                    vm.GameProcess = null;
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _ = new MessageBoxWindow("Launch Failed", ex.Message, null);
+        }
+    }
+
+    private string? GetGameExecutablePath(MainWindowViewModel vm, string[] info)
+    {
+        string expectedExeName = info[3].Trim();
+        string candidate = Path.Combine(vm.GameFolder, info[2].Trim(), expectedExeName);
+        if (File.Exists(candidate))
+        {
+            return candidate;
+        }
+
+        candidate = Path.Combine(vm.GameFolder, expectedExeName);
+        if (File.Exists(candidate))
+        {
+            return candidate;
+        }
+
+        try
+        {
+            var found = Directory.EnumerateFiles(vm.GameFolder, expectedExeName, SearchOption.AllDirectories).FirstOrDefault();
+            if (!string.IsNullOrEmpty(found))
+            {
+                return found;
+            }
+
+            return Directory.EnumerateFiles(vm.GameFolder, "*.exe", SearchOption.AllDirectories)
+                .FirstOrDefault(file => Path.GetFileName(file).Equals(expectedExeName, StringComparison.OrdinalIgnoreCase));
+        }
+        catch
+        {
+            return null;
         }
     }
 
