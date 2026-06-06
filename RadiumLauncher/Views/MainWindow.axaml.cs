@@ -54,14 +54,6 @@ public partial class MainWindow : Window
         Closed += (_, _) =>
         {
             _titleLogoAnimationTimer?.Stop();
-            StopBackgroundMusic();
-        };
-        Opened += (_, _) =>
-        {
-            if (!_isMusicMuted)
-            {
-                PlayBackgroundMusic();
-            }
         };
         ShowHomeTab();
 
@@ -105,38 +97,6 @@ public partial class MainWindow : Window
         _inactivityTimer?.Start();
     }
 
-    private void PlayBackgroundMusic()
-    {
-        try
-        {
-            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets", "Music", "theme.mp3");
-            if (File.Exists(path))
-            {
-                AudioService.Play(path);
-            }
-            else
-            {
-                Debug.WriteLine($"Background music file not found: {path}");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Background music failed to start: {ex}");
-        }
-    }
-
-    private void StopBackgroundMusic()
-    {
-        try
-        {
-            AudioService.Stop();
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"Background music failed to stop: {ex}");
-        }
-    }
-
     private void TitleLogoAnimationTimer_Tick(object? sender, EventArgs e)
     {
         _titleLogoAnimationTime += HomeLogoMotionTimerIntervalMs / 1000.0 * HomeLogoMotionSpeed;
@@ -154,21 +114,6 @@ public partial class MainWindow : Window
         {
             homeMotion.X = motionX;
             homeMotion.Y = motionY;
-        }
-    }
-
-    private void MusicToggleButton_Click(object? sender, RoutedEventArgs e)
-    {
-        _isMusicMuted = !_isMusicMuted;
-        MusicToggleButton.Content = _isMusicMuted ? "🔇" : "🔊";
-
-        if (_isMusicMuted)
-        {
-            AudioService.Stop();
-        }
-        else
-        {
-            PlayBackgroundMusic();
         }
     }
 
@@ -290,8 +235,6 @@ public partial class MainWindow : Window
             {
                 vm.VrModeBatchFile = settings.VrModeBatchFile;
             }
-
-            AudioService.SetVolume(settings.MusicVolume / 100f);
         }
         catch (Exception ex)
         {

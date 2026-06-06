@@ -5,6 +5,7 @@
       <map>
         <entry key="RadiumLauncher/App.axaml" value="RadiumLauncher/RadiumLauncher.csproj" />
         <entry key="RadiumLauncher/Views/ConfigurationWindow.axaml" value="RadiumLauncher/RadiumLauncher.csproj" />
+        <entry key="RadiumLauncher/Views/ConfirmWindow.axaml" value="RadiumLauncher/RadiumLauncher.csproj" />
         <entry key="RadiumLauncher/Views/MainWindow.axaml" value="RadiumLauncher/RadiumLauncher.csproj" />
         <entry key="RadiumLauncher/Views/MessageBoxWindow.axaml" value="RadiumLauncher/RadiumLauncher.csproj" />
       </map>

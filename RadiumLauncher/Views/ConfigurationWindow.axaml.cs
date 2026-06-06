@@ -57,15 +57,11 @@ public partial class ConfigurationWindow : Window
             VrBatchFileTb.Text = string.IsNullOrWhiteSpace(settings.VrModeBatchFile)
                 ? "RecRoom_VR.bat"
                 : settings.VrModeBatchFile;
-            MusicVolumeSlider.Value = settings.MusicVolume;
-            MusicVolumeValueText.Text = $"{settings.MusicVolume}%";
         }
         catch
         {
             ScreenBatchFileTb.Text = "RecRoom_ScreenMode.bat";
             VrBatchFileTb.Text = "RecRoom_VR.bat";
-            MusicVolumeSlider.Value = 100;
-            MusicVolumeValueText.Text = "100%";
         }
     }
 
@@ -82,7 +78,6 @@ public partial class ConfigurationWindow : Window
 
             settings.ScreenModeBatchFile = ScreenBatchFileTb.Text ?? "RecRoom_ScreenMode.bat";
             settings.VrModeBatchFile = VrBatchFileTb.Text ?? "RecRoom_VR.bat";
-            settings.MusicVolume = (int)Math.Round(MusicVolumeSlider.Value);
             File.WriteAllText(_settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch
@@ -99,14 +94,6 @@ public partial class ConfigurationWindow : Window
     private void LaunchOptions_Changed(object? sender, RoutedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "launchoptions.txt"), Launchoptstb.Text ?? "%command%");
-    }
-
-    private void MusicVolumeSlider_Changed(object? sender, RoutedEventArgs e)
-    {
-        int volume = (int)Math.Round(MusicVolumeSlider.Value);
-        MusicVolumeValueText.Text = $"{volume}%";
-        SaveBatchFileSettings();
-        AudioService.SetVolume(volume / 100f);
     }
 
     private void ScreenBatchFile_Changed(object? sender, RoutedEventArgs e)

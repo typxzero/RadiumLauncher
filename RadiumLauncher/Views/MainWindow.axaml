@@ -320,13 +320,6 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <Button x:Name="MusicToggleButton"
-                                Content="🔊"
-                                Background="Transparent"
-                                Foreground="#888888"
-                                Padding="8,4"
-                                Click="MusicToggleButton_Click" />
-
                         <Button Content="Update"
                             Background="Transparent"
                             Foreground="#888888"

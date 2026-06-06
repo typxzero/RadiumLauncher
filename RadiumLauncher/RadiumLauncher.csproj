@@ -14,9 +14,6 @@
 
     <ItemGroup>
       <None Remove="Assets\Music\theme.mp3" />
-      <Content Include="Assets\Music\theme.mp3">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
     <ItemGroup>
@@ -31,7 +28,6 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
-        <PackageReference Include="NAudio" Version="2.3.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -55,5 +51,11 @@
       <Content Include="Binaries\7zxa.dll">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\ConfirmWindow.axaml.cs">
+        <DependentUpon>ConfirmWindow.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

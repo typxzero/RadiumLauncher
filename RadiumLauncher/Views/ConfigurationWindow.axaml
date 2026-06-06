@@ -68,13 +68,6 @@
                         <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
                                  CornerRadius="4" TextChanged="LaunchOptions_Changed" />
                     </StackPanel>
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Menu Music Volume" Foreground="#888888" FontSize="12" />
-                        <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                            <Slider x:Name="MusicVolumeSlider" Minimum="0" Maximum="100" ValueChanged="MusicVolumeSlider_Changed" Width="220" />
-                            <TextBlock x:Name="MusicVolumeValueText" Text="100%" Foreground="White" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </StackPanel>
 
                     <Expander Header="Advanced" IsExpanded="False">
                         <StackPanel Spacing="10" Margin="0,10,0,0">
