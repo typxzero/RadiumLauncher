@@ -9,6 +9,9 @@ public static class AppConstants
     // Defaulting to the original repo; change to your fork if you prefer updates from there.
     public const string GitHubRepo = "typxzero/RadiumLauncher";
 
+    public static string GameFolder;
+    public static string SteamAppId = "471710";
+    
     public static string AppDataDirectory
     {
         get

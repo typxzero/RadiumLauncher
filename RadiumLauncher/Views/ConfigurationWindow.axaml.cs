@@ -2,12 +2,10 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using RadiumLauncher.Models;
-using RadiumLauncher.Services;
 
 namespace RadiumLauncher.Views;
 
@@ -37,7 +35,8 @@ public partial class ConfigurationWindow : Window
 
         Protonpathtb.Text = currentProtonPath;
         Launchoptstb.Text = currentLaunchOptions;
-
+        Steamappidtb.Text = File.ReadAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt")).Trim();
+        
         LoadBatchFileSettings();
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
@@ -96,6 +95,11 @@ public partial class ConfigurationWindow : Window
     private void ProtonPath_Changed(object? sender, RoutedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "protonpath.txt"), Protonpathtb.Text ?? string.Empty);
+    }
+
+    private void SteamAppId_Changed(object? sender, RoutedEventArgs e)
+    {
+        File.WriteAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt"), Steamappidtb.Text);
     }
 
     private void LaunchOptions_Changed(object? sender, RoutedEventArgs e)

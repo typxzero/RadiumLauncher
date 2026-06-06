@@ -7,7 +7,7 @@ namespace RadiumLauncher.Services;
 
 public class UpdateService
 {
-    private static readonly HttpClient _http = new() { Timeout = TimeSpan.FromSeconds(10) };
+    private static readonly HttpClient _httpClient = new() { Timeout = TimeSpan.FromSeconds(10) };
 
     public async Task<(bool IsAvailable, string LatestVersion, string HtmlUrl)> CheckLatestReleaseAsync(string currentVersion)
     {
@@ -21,7 +21,7 @@ public class UpdateService
         using var req = new HttpRequestMessage(HttpMethod.Get, url);
         req.Headers.UserAgent.ParseAdd("RadiumLauncher-Updater");
 
-        using var resp = await _http.SendAsync(req).ConfigureAwait(false);
+        using var resp = await _httpClient.SendAsync(req).ConfigureAwait(false);
         if (!resp.IsSuccessStatusCode) return (false, string.Empty, string.Empty);
 
         using var stream = await resp.Content.ReadAsStreamAsync().ConfigureAwait(false);

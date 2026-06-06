@@ -115,6 +115,11 @@
                                  CornerRadius="4" TextChanged="ProtonPath_Changed" />
                     </StackPanel>
                     <StackPanel Spacing="5">
+                        <TextBlock Text="Steam App Id" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Steamappidtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="SteamAppId_Changed" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
                         <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
                         <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
                                  CornerRadius="4" TextChanged="LaunchOptions_Changed" />

@@ -18,7 +18,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using RadiumLauncher.Models;
-using RadiumLauncher.Services;
 using RadiumLauncher.ViewModels;
 
 namespace RadiumLauncher.Views;
@@ -39,7 +38,6 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer? _inactivityTimer;
     private readonly DispatcherTimer? _titleLogoAnimationTimer;
     private bool _isInitialized;
-    private bool _isMusicMuted;
     private double _titleLogoAnimationTime;
     private MainWindowViewModel? _currentViewModel;
     private readonly string _configFolder = Path.Combine(AppConstants.AppDataDirectory, "Configuration");
@@ -271,9 +269,9 @@ public partial class MainWindow : Window
             vm.Announcements.Add(line);
         }
 
-        if (vm.Announcements.Count == 0)
+        if (vm.Announcements.Count != 0)
         {
-            AnnouncementsPanel.IsVisible = false;
+            AnnouncementsPanel.IsVisible = true;
         }
     }
 
@@ -296,6 +294,26 @@ public partial class MainWindow : Window
     {
         await FetchLatestInfo(vm);
         await UpdateLauncherState(vm);
+        string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
+        string? gameExePath = GetGameExecutablePath(vm, info);
+        if (string.IsNullOrEmpty(gameExePath))
+        {
+            AppConstants.SteamAppId = "471710";
+        }
+        else
+        {
+            AppConstants.GameFolder = Path.Combine(gameExePath, "..");
+            string appIdPath = Path.Combine(AppConstants.GameFolder, "steam_appid.txt");
+            if (File.Exists(appIdPath))
+            {
+                AppConstants.SteamAppId = (await File.ReadAllTextAsync(appIdPath)).Trim();
+            }
+            else
+            {
+                AppConstants.SteamAppId = "471710";
+                await File.WriteAllTextAsync(appIdPath, AppConstants.SteamAppId);
+            }
+        }
     }
 
     private async Task UpdateLauncherState(MainWindowViewModel vm)
@@ -563,10 +581,8 @@ public partial class MainWindow : Window
             _ = new MessageBoxWindow("Missing Executable", "Could not find the Radium executable.", null);
             return;
         }
-
-        string gameDirectory = Path.GetDirectoryName(gameExePath) ?? vm.GameFolder;
-
-        string appId = await File.ReadAllTextAsync(Path.Combine(gameDirectory, "steam_appid.txt"));
+        
+        string appId = AppConstants.SteamAppId;
         var pInfo = new ProcessStartInfo
         {
             WorkingDirectory = Path.GetDirectoryName(gameExePath),
@@ -654,7 +670,7 @@ public partial class MainWindow : Window
         return File.Exists(localPath) ? localPath : null;
     }
 
-    private async Task StartProcess(string path, MainWindowViewModel vm, bool isBatch = false)
+    private Task StartProcess(string path, MainWindowViewModel vm, bool isBatch = false)
     {
         try
         {
@@ -684,6 +700,8 @@ public partial class MainWindow : Window
         {
             _ = new MessageBoxWindow("Launch Failed", ex.Message, null);
         }
+
+        return Task.CompletedTask;
     }
 
     private string? GetGameExecutablePath(MainWindowViewModel vm, string[] info)

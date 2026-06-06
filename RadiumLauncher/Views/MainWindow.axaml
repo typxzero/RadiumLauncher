@@ -500,7 +500,7 @@
                                            VerticalAlignment="Center" />
                             </StackPanel>
 
-                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12">
+                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12" IsVisible="False">
                                 <TextBlock Text="Announcements" Foreground="White" FontSize="16" FontWeight="SemiBold"
                                            Margin="10,0,0,0" />
                                 <Border Background="#50000000" CornerRadius="10" Padding="12">
