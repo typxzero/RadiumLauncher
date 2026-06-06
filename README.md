@@ -15,6 +15,7 @@ An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 - New settings options
    - Volume Control
    - Advanced tab containing custom Batch File paths (for users who don't want to reinstall radium)
+   - Radium Uninstall capabilities
 - UI Changes
 - Credits Tab
 - Download Information
