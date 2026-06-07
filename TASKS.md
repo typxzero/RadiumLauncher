@@ -3,6 +3,6 @@ Tasks that are not in progress or completed are available for contribution.
 
 | Task | Status |
 | :--- | :--- |
-| Check API before launching | ❌ Not yet |
+| Check API before launching | ✅ Completed |
 | Multi-threaded download | ❌ Not yet |
 | Discord RPC | ❌ Not yet |
