@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -953,7 +954,49 @@ public partial class MainWindow : Window
 
             if (vm.CurrentState == LauncherState.Ready)
             {
-                await LaunchRadium(vm);
+                bool apiAvailable;
+                using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
+                {
+                    try
+                    {
+                        var checkApiRes = await _httpClient.GetAsync("https://api.radie.app/", cts.Token);
+                        apiAvailable = checkApiRes.IsSuccessStatusCode;
+                    }
+                    catch (TaskCanceledException ex) when (ex.CancellationToken == cts.Token)
+                    {
+                        Debug.WriteLine("API check timed out.");
+                        apiAvailable = false;
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Error checking API status: {ex}");
+                        apiAvailable = false;
+                    }
+                }
+
+                if (apiAvailable)
+                {
+                    await LaunchRadium(vm);
+                }
+                else
+                {
+                    var confirm = new ConfirmationWindow(
+                        "Confirm Launch",
+                        $"Radium's API server is down. Would you like to continue anyway?",
+                        "Yes",
+                        "No");
+                    confirm.Height = 175;
+
+                    var result = await confirm.ShowDialog<bool?>(this);
+                    if (result == true)
+                    {
+                        await LaunchRadium(vm);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
             }
             else if (vm.CurrentState is LauncherState.NeedsDownload or LauncherState.NeedsUpdate)
             {

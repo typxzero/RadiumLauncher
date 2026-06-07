@@ -41,9 +41,6 @@
                 </Transitions>
             </Setter>
         </Style>
-        <Style Selector="Button.MainAction:pointerover">
-            <Setter Property="Background" Value="#000000" />
-        </Style>
 
         <Style Selector="Button.Ready">
             <Setter Property="Background" Value="#24d81e" />
