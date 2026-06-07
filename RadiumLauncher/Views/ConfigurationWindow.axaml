@@ -109,6 +109,13 @@
                 <StackPanel Spacing="15" Margin="20, 20, 20, 20">
                     <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
 
+                    <StackPanel Spacing="5">
+                        <TextBlock Text="Downloader Thread Count" Foreground="#888888" FontSize="12" />
+                        <NumericUpDown x:Name="Threadcountnud" Background="#1A1A1A" BorderBrush="#2D2D2D"
+                                       CornerRadius="4" ValueChanged="ThreadCount_Changed" Minimum="1" 
+                                       Increment="1" FormatString="F0"/>
+                    </StackPanel>
+
                     <StackPanel x:Name="ProtonOption" Spacing="5" IsVisible="False">
                         <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
                         <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"

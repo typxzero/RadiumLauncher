@@ -20,6 +20,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using RadiumLauncher.Models;
 using RadiumLauncher.ViewModels;
+using Downloader;
 
 namespace RadiumLauncher.Views;
 
@@ -284,9 +285,7 @@ public partial class MainWindow : Window
         }
 
         if (span.TotalMinutes >= 1)
-        {
             return $"{(int)span.TotalMinutes}m {span.Seconds}s";
-        }
 
         return $"{span.Seconds}s";
     }
@@ -410,50 +409,51 @@ public partial class MainWindow : Window
             vm.DownloadProgress = 0;
 
             var zipPath = Path.Combine(AppConstants.AppDataDirectory, info[4]);
-            using (var response = await _httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
+            
+            string settingsPath = Path.Combine(_configFolder, SettingsFileName);
+            LauncherSettings? settings = null;
+            if (File.Exists(settingsPath))
             {
-                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
-                await using (var content = await response.Content.ReadAsStreamAsync())
-                await using (var file = new FileStream(zipPath, FileMode.Create))
-                {
-                    var buffer = new byte[8192];
-                    var totalRead = 0L;
-                    int read;
-                    DateTime startTime = DateTime.Now;
-
-                            while ((read = await content.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                    {
-                        await file.WriteAsync(buffer, 0, read);
-                        totalRead += read;
-
-                        double elapsed = (DateTime.Now - startTime).TotalSeconds;
-                        double speed = elapsed > 0 ? (totalRead / 1024.0 / 1024.0) / elapsed : 0;
-
-                        if (totalBytes != -1)
-                        {
-                            vm.DownloadProgress = (double)totalRead / totalBytes * 100;
-                            vm.ProgressDetails =
-                                $"{totalRead / 1024.0 / 1024.0:F1}MB / {totalBytes / 1024.0 / 1024.0:F1}MB | {speed:F1} MB/s";
-
-                            long remainingBytes = totalBytes - totalRead;
-                            if (remainingBytes > 0 && speed > 0)
-                            {
-                                var eta = TimeSpan.FromSeconds(remainingBytes / 1024.0 / 1024.0 / speed);
-                                vm.EtaText = $"ETA: {FormatTimeSpan(eta)}";
-                            }
-                            else
-                            {
-                                vm.EtaText = "ETA: calculating...";
-                            }
-                        }
-                        else
-                        {
-                            vm.ProgressDetails = $"Downloaded {totalRead / 1024.0 / 1024.0:F1}MB";
-                            vm.EtaText = "ETA: calculating...";
-                        }
-                    }
-                }
+                var json = File.ReadAllText(settingsPath);
+                settings = JsonSerializer.Deserialize<LauncherSettings>(json);
             }
+
+            var downloadConfiguration = new DownloadConfiguration()
+            {
+                BufferBlockSize = 10240,
+                ChunkCount = (int)settings.DlThreadCount,
+                MaximumMemoryBufferBytes = 1024 * 1024 * 10,
+                BlockTimeout = 10000
+            };
+
+            var downloader = new DownloadService(downloadConfiguration);
+            downloader.DownloadProgressChanged += (sender, args) =>
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    vm.DownloadProgress = args.ProgressPercentage;
+                    vm.ProgressDetails =
+                        $"{args.ReceivedBytesSize / 1024.0 / 1024.0:F1}MB / {args.TotalBytesToReceive / 1024.0 / 1024.0:F1}MB | {args.BytesPerSecondSpeed / 1024.0 / 1024.0:F1} MB/s";
+                    
+                    double etaSeconds = 0;
+                    if (args.BytesPerSecondSpeed > 0)
+                    {
+                        etaSeconds = (args.TotalBytesToReceive - args.ReceivedBytesSize) / args.BytesPerSecondSpeed;
+                    }
+
+                    if (double.IsFinite(etaSeconds) && etaSeconds >= 0 && etaSeconds <= TimeSpan.MaxValue.TotalSeconds)
+                    {
+                        var eta = TimeSpan.FromSeconds(etaSeconds);
+                        vm.EtaText = $"ETA: {FormatTimeSpan(eta)}";
+                    }
+                    else
+                    {
+                        vm.EtaText = "ETA: calculating...";
+                    }
+                });
+            };
+
+            await downloader.DownloadFileTaskAsync(downloadUrl, zipPath);
 
             vm.CurrentState = LauncherState.Verifying;
             var hashed = await SHA256.HashDataAsync(File.OpenRead(zipPath));
@@ -480,13 +480,11 @@ public partial class MainWindow : Window
             Directory.CreateDirectory(vm.GameFolder);
 
             await File.WriteAllTextAsync(Path.Combine(vm.GameFolder, "hash.txt"), hashedStr);
-
             await Task.Run(() => ExtractArchive(zipPath, vm.GameFolder));
 
             File.Delete(zipPath);
 
             await PatchRadium(vm);
-
             await UpdateLauncherState(vm);
         }
         catch (Exception ex)

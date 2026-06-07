@@ -24,6 +24,11 @@ public partial class ConfigurationWindow : Window
             Directory.CreateDirectory(_configFolder);
         }
 
+        if (!Directory.Exists(AppConstants.GameFolder))
+        {
+            Directory.CreateDirectory(AppConstants.GameFolder);
+        }
+
         _settingsPath = Path.Combine(_configFolder, SettingsFileName);
 
         string protonPathFile = Path.Combine(_configFolder, "protonpath.txt");
@@ -43,7 +48,7 @@ public partial class ConfigurationWindow : Window
         Launchoptstb.Text = currentLaunchOptions;
         Steamappidtb.Text = File.ReadAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt")).Trim();
         
-        LoadBatchFileSettings();
+        LoadSettings();
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
@@ -52,7 +57,7 @@ public partial class ConfigurationWindow : Window
         }
     }
 
-    private void LoadBatchFileSettings()
+    private void LoadSettings()
     {
         try
         {
@@ -69,6 +74,7 @@ public partial class ConfigurationWindow : Window
             VrBatchFileTb.Text = string.IsNullOrWhiteSpace(settings.VrModeBatchFile)
                 ? "RecRoom_VR.bat"
                 : settings.VrModeBatchFile;
+            Threadcountnud.Value = settings.DlThreadCount;
         }
         catch
         {
@@ -77,7 +83,7 @@ public partial class ConfigurationWindow : Window
         }
     }
 
-    private void SaveBatchFileSettings()
+    private void SaveSettings()
     {
         try
         {
@@ -90,12 +96,18 @@ public partial class ConfigurationWindow : Window
 
             settings.ScreenModeBatchFile = ScreenBatchFileTb.Text ?? "RecRoom_ScreenMode.bat";
             settings.VrModeBatchFile = VrBatchFileTb.Text ?? "RecRoom_VR.bat";
+            settings.DlThreadCount = Threadcountnud.Value ?? 8;
             File.WriteAllText(_settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch
         {
             // ignore write failures for config settings
         }
+    }
+
+    private void ThreadCount_Changed(object? sender, RoutedEventArgs e)
+    {
+        SaveSettings();
     }
 
     private void ProtonPath_Changed(object? sender, RoutedEventArgs e)
@@ -116,12 +128,12 @@ public partial class ConfigurationWindow : Window
 
     private void ScreenBatchFile_Changed(object? sender, RoutedEventArgs e)
     {
-        SaveBatchFileSettings();
+        SaveSettings();
     }
 
     private void VrBatchFile_Changed(object? sender, RoutedEventArgs e)
     {
-        SaveBatchFileSettings();
+        SaveSettings();
     }
 
     private async void UninstallButton_Click(object? sender, RoutedEventArgs e)
