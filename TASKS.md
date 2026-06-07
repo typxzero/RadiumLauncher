@@ -6,4 +6,5 @@ Tasks that are not in progress or completed are available for contribution.
 | Check API before launching | ✅ Completed |
 | Multi-threaded download | ✅ Completed  |
 | Discord RPC | ✅ Completed |
-| MacOS Support | ❌ Not yet |
+| MacOS Support | ✅ Completed |
+No more tasks! 🎉
