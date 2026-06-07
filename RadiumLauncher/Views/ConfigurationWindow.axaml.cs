@@ -54,6 +54,10 @@ public partial class ConfigurationWindow : Window
         {
             ProtonOption.IsVisible = true;
             AdvancedOptions.IsVisible = false; // replace when linux gets an advanced feature
+        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            WineOption.IsVisible = true;
+            AdvancedOptions.IsVisible = false; // same thing here
         }
     }
 
@@ -117,6 +121,11 @@ public partial class ConfigurationWindow : Window
     private void ProtonPath_Changed(object? sender, RoutedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "protonpath.txt"), Protonpathtb.Text ?? string.Empty);
+    }
+    
+    private void WinePath_Changed(object? sender, RoutedEventArgs e)
+    {
+        File.WriteAllText(Path.Combine(_configFolder, "winepath.txt"), Winepathtb.Text ?? string.Empty);
     }
 
     private void SteamAppId_Changed(object? sender, RoutedEventArgs e)

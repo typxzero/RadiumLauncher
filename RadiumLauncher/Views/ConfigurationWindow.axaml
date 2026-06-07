@@ -130,6 +130,13 @@
                         <TextBox x:Name="Protonpathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
                                  CornerRadius="4" TextChanged="ProtonPath_Changed" />
                     </StackPanel>
+                    
+                    <StackPanel x:Name="WineOption" Spacing="5" IsVisible="False">
+                        <TextBlock Text="Wine Path (macOS)" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Winepathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="WinePath_Changed" />
+                    </StackPanel>
+                    
                     <StackPanel Spacing="5">
                         <TextBlock Text="Steam App Id" Foreground="#888888" FontSize="12" />
                         <TextBox x:Name="Steamappidtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"

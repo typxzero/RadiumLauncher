@@ -387,13 +387,13 @@ public partial class MainWindow : Window
         {
             vm.InfoResponse = string.Empty;
             _ = new MessageBoxWindow("Network Error",
-                $"Could not fetch latest info. Please check your internet connection. Details: {ex.Message}", null);
+                $"Could not fetch latest info. Please check your internet connection. Details: {ex.Message}", null).ShowDialog(this);
         }
         catch (Exception ex)
         {
             vm.InfoResponse = string.Empty;
             _ = new MessageBoxWindow("Error",
-                $"An unexpected error occurred while fetching latest info. Details: {ex.Message}", null);
+                $"An unexpected error occurred while fetching latest info. Details: {ex.Message}", null).ShowDialog(this);
         }
     }
 
@@ -464,7 +464,7 @@ public partial class MainWindow : Window
                 !hashedStr.Equals(expectedHash, StringComparison.OrdinalIgnoreCase))
             {
                 _ = new MessageBoxWindow("Hash Mismatch",
-                    "File hashes do not match. Current installation may be corrupt.", null);
+                    "File hashes do not match. Current installation may be corrupt.", null).ShowDialog(this);
                 vm.CurrentState = LauncherState.NeedsDownload;
                 return;
             }
@@ -490,7 +490,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            _ = new MessageBoxWindow("Installation Failed", ex.Message, null);
+            _ = new MessageBoxWindow("Installation Failed", ex.Message, null).ShowDialog(this);
             vm.CurrentState = LauncherState.NeedsDownload;
         }
     }
@@ -543,7 +543,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            _ = new MessageBoxWindow("Patching Failed", ex.Message, null);
+            _ = new MessageBoxWindow("Patching Failed", ex.Message, null).ShowDialog(this);
         }
     }
 
@@ -577,7 +577,7 @@ public partial class MainWindow : Window
         string? gameExePath = GetGameExecutablePath(vm, info);
         if (string.IsNullOrEmpty(gameExePath) || !File.Exists(gameExePath))
         {
-            _ = new MessageBoxWindow("Missing Executable", "Could not find the Radium executable.", null);
+            _ = new MessageBoxWindow("Missing Executable", "Could not find the Radium executable.", null).ShowDialog(this);
             return;
         }
         
@@ -602,22 +602,63 @@ public partial class MainWindow : Window
             string protonPathFile = Path.Combine(_configFolder, "protonpath.txt");
             string protonPath = File.Exists(protonPathFile) ? (await File.ReadAllTextAsync(protonPathFile)).Trim() : "";
 
-            string finalSteamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                ".steam/steam");
+            if (!string.IsNullOrEmpty(protonPath))
+            {
+                _ = new MessageBoxWindow("Missing Configuration", "Please set the Proton folder in the configuration window to continue.", null);
+                return;
+            }
+            
+            string finalSteamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam/steam");
             if (!Directory.Exists(finalSteamPath))
             {
-                finalSteamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    ".local/share/Steam");
+                finalSteamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".local/share/Steam");
+                if (!Directory.Exists(finalSteamPath))
+                {
+                    finalSteamPath = Path.Combine(protonPath, "..", "..", "..");
+                    if (!Directory.Exists(finalSteamPath))
+                    {
+                        _ = new MessageBoxWindow("Steam Missing", "Could not find the Steam folder. Please check if Steam is installed.", null).ShowDialog(this);
+                        return;
+                    }
+                }
             }
 
-            string compatDaTaPath = Path.Combine(vm.GameFolder, "compatdata_radium");
+            string compatDataPath = Path.Combine(vm.GameFolder, "compatdata_radium");
 
             pInfo.FileName = Path.Combine(protonPath, "proton");
             pInfo.EnvironmentVariables["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = finalSteamPath;
-            if (!Directory.Exists(compatDaTaPath)) Directory.CreateDirectory(compatDaTaPath);
-            pInfo.EnvironmentVariables["STEAM_COMPAT_DATA_PATH"] = compatDaTaPath;
+            if (!Directory.Exists(compatDataPath)) Directory.CreateDirectory(compatDataPath);
+            pInfo.EnvironmentVariables["STEAM_COMPAT_DATA_PATH"] = compatDataPath;
             pInfo.EnvironmentVariables["WINEDLLOVERRIDES"] = "winhttp=n,b";
             pInfo.Arguments = $"run \"{gameExePath}\" {mode}";
+        }
+        else if (vm.OperatingSystemName == "macOS")
+        {
+            // please someone on macos fix this if it is incorrect
+            string winePathFile = Path.Combine(_configFolder, "winepath.txt");
+            string winePath = File.Exists(winePathFile) ? (await File.ReadAllTextAsync(winePathFile)).Trim() : "";
+
+            if (!string.IsNullOrEmpty(winePath))
+            {
+                _ = new MessageBoxWindow("Missing Configuration", "Please set the Wine executable path in the configuration window to continue.", null);
+                return;
+            }
+            
+            string finalSteamPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Steam");
+            if (!Directory.Exists(finalSteamPath))
+            {
+                _ = new MessageBoxWindow("Steam Missing", "Could not find the Steam folder. Please check if Steam is installed.", null).ShowDialog(this);
+                return;
+            }
+
+            string compatDataPath = Path.Combine(vm.GameFolder, "compatdata_radium");
+
+            pInfo.FileName = winePath;
+            pInfo.EnvironmentVariables["STEAM_COMPAT_CLIENT_INSTALL_PATH"] = finalSteamPath;
+            if (!Directory.Exists(compatDataPath)) Directory.CreateDirectory(compatDataPath);
+            pInfo.EnvironmentVariables["WINEPREFIX"] = compatDataPath;
+            pInfo.EnvironmentVariables["WINEDLLOVERRIDES"] = "winhttp=n,b";
+            pInfo.Arguments = $"\"{gameExePath}\" {mode}";
         }
         else
         {
@@ -644,7 +685,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            _ = new MessageBoxWindow("Launch Failed", ex.Message, null);
+            _ = new MessageBoxWindow("Launch Failed", ex.Message, null).ShowDialog(this);
         }
     }
 
@@ -699,7 +740,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            _ = new MessageBoxWindow("Launch Failed", ex.Message, null);
+            _ = new MessageBoxWindow("Launch Failed", ex.Message, null).ShowDialog(this);
         }
 
         return Task.CompletedTask;
@@ -762,7 +803,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            _ = new MessageBoxWindow("Stop Failed", ex.Message, null);
+            _ = new MessageBoxWindow("Stop Failed", ex.Message, null).ShowDialog(this);
         }
     }
 
