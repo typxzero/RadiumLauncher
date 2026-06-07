@@ -21,6 +21,7 @@ using Avalonia.Threading;
 using RadiumLauncher.Models;
 using RadiumLauncher.ViewModels;
 using Downloader;
+using RadiumLauncher.Services;
 
 namespace RadiumLauncher.Views;
 
@@ -414,7 +415,7 @@ public partial class MainWindow : Window
             LauncherSettings? settings = null;
             if (File.Exists(settingsPath))
             {
-                var json = File.ReadAllText(settingsPath);
+                var json = await File.ReadAllTextAsync(settingsPath);
                 settings = JsonSerializer.Deserialize<LauncherSettings>(json);
             }
 
@@ -427,7 +428,7 @@ public partial class MainWindow : Window
             };
 
             var downloader = new DownloadService(downloadConfiguration);
-            downloader.DownloadProgressChanged += (sender, args) =>
+            downloader.DownloadProgressChanged += (_, args) =>
             {
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -629,6 +630,7 @@ public partial class MainWindow : Window
             var p = Process.Start(pInfo);
             if (p != null)
             {
+                var discordRpcService = new DiscordRpcService(vm);
                 vm.GameProcess = p;
                 vm.CurrentState = LauncherState.Running;
                 p.EnableRaisingEvents = true;
@@ -636,6 +638,7 @@ public partial class MainWindow : Window
                 {
                     vm.CurrentState = LauncherState.Ready;
                     vm.GameProcess = null;
+                    discordRpcService.Dispose();
                 });
             }
         }
@@ -982,17 +985,15 @@ public partial class MainWindow : Window
                         "Confirm Launch",
                         $"Radium's API server is down. Would you like to continue anyway?",
                         "Yes",
-                        "No");
-                    confirm.Height = 175;
+                        "No")
+                    {
+                        Height = 175
+                    };
 
                     var result = await confirm.ShowDialog<bool?>(this);
                     if (result == true)
                     {
                         await LaunchRadium(vm);
-                    }
-                    else
-                    {
-                        return;
                     }
                 }
             }

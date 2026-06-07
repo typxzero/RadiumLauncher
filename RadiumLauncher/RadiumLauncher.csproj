@@ -29,7 +29,9 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.1" />
+        <PackageReference Include="DiscordRichPresence" Version="1.6.1.70" />
         <PackageReference Include="Downloader" Version="5.8.0" />
+        <PackageReference Include="HtmlAgilityPack" Version="1.12.4" />
     </ItemGroup>
 
     <ItemGroup>

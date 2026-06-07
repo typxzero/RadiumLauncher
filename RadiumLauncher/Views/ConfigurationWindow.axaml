@@ -109,6 +109,15 @@
                 <StackPanel Spacing="15" Margin="20, 20, 20, 20">
                     <TextBlock Text="Settings" Foreground="White" FontSize="18" FontWeight="SemiBold" />
 
+                    <CheckBox x:Name="DiscordRPCOption" Content="Discord RPC" IsChecked="False"
+                              IsCheckedChanged="DiscordRPCOption_Checked"/>
+                    
+                    <StackPanel x:Name="UsernameOption" Spacing="5">
+                        <TextBlock Text="Radium Username" Foreground="#888888" FontSize="12" />
+                        <TextBox x:Name="Usernameopttb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                 CornerRadius="4" TextChanged="Username_Changed"/>
+                    </StackPanel>
+                    
                     <StackPanel Spacing="5">
                         <TextBlock Text="Downloader Thread Count" Foreground="#888888" FontSize="12" />
                         <NumericUpDown x:Name="Threadcountnud" Background="#1A1A1A" BorderBrush="#2D2D2D"

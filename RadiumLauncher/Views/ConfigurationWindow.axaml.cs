@@ -75,6 +75,8 @@ public partial class ConfigurationWindow : Window
                 ? "RecRoom_VR.bat"
                 : settings.VrModeBatchFile;
             Threadcountnud.Value = settings.DlThreadCount;
+            DiscordRPCOption.IsChecked = settings.DiscordRpcEnabled;
+            Usernameopttb.Text = settings.RadiumUsername;
         }
         catch
         {
@@ -97,6 +99,8 @@ public partial class ConfigurationWindow : Window
             settings.ScreenModeBatchFile = ScreenBatchFileTb.Text ?? "RecRoom_ScreenMode.bat";
             settings.VrModeBatchFile = VrBatchFileTb.Text ?? "RecRoom_VR.bat";
             settings.DlThreadCount = Threadcountnud.Value ?? 8;
+            settings.DiscordRpcEnabled = DiscordRPCOption.IsChecked;
+            settings.RadiumUsername = Usernameopttb.Text;
             File.WriteAllText(_settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch
@@ -181,5 +185,15 @@ public partial class ConfigurationWindow : Window
     private void CloseButton_Click(object? sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private void DiscordRPCOption_Checked(object? sender, RoutedEventArgs e)
+    {
+        SaveSettings();
+    }
+
+    private void Username_Changed(object? sender, TextChangedEventArgs e)
+    {
+        SaveSettings();
     }
 }
