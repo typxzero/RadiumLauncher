@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
@@ -11,10 +11,6 @@
     <ItemGroup>
         <Folder Include="Models\" />
         <AvaloniaResource Include="Assets\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Remove="Assets\Music\theme.mp3" />
     </ItemGroup>
 
     <ItemGroup>
@@ -36,23 +32,25 @@
 
     <ItemGroup>
       <None Remove="Binaries\7za.exe" />
-      <Content Include="Binaries\7za.exe">
+      <Content Include="Binaries\7za.exe" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="Binaries\7za.dll" />
-      <Content Include="Binaries\7za.dll">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <None Remove="Binaries\7zz-mac" />
-      <Content Include="Binaries\7zz-mac">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <None Remove="Binaries\7zz" />
-      <Content Include="Binaries\7zz">
+      <Content Include="Binaries\7za.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
       <None Remove="Binaries\7zxa.dll" />
-      <Content Include="Binaries\7zxa.dll">
+      <Content Include="Binaries\7zxa.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+
+      <None Remove="Binaries\7zz-mac" />
+      <Content Include="Binaries\7zz-mac" Condition="'$(RuntimeIdentifier)' == 'osx-arm64' Or '$(RuntimeIdentifier)' == ''">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+
+      <None Remove="Binaries\7zz" />
+      <Content Include="Binaries\7zz" Condition="'$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
     </ItemGroup>
