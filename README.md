@@ -24,7 +24,7 @@ Visit the latest release page for the download: [Latest Release](https://github.
 | :--- | :--- |
 | Windows 10/11 | ✅ Compatible |
 | Linux | ✅ Compatible |
-| macOS | ⚠️ Not tested |
+| macOS | ⚠️ Non-Functional |
 
 ## Features
 - Automatic updates
