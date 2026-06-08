@@ -33,20 +33,25 @@
     <ItemGroup>
       <Content Include="Binaries\7za.exe" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+	      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			</Content>
       <Content Include="Binaries\7za.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
       <Content Include="Binaries\7zxa.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
 
       <Content Include="Binaries\7zz-mac" Condition="'$(RuntimeIdentifier)' == 'osx-arm64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
 
       <Content Include="Binaries\7zz" Condition="'$(RuntimeIdentifier)' == 'linux-x64' Or '$(RuntimeIdentifier)' == ''">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       </Content>
     </ItemGroup>
 
