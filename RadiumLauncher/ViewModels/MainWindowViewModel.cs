@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -100,17 +100,18 @@ public partial class MainWindowViewModel : ViewModelBase
             var current = entry?.GetName().Version?.ToString() ?? "0.0.0";
             var svc = new UpdateService();
             var (available, latest, url) = await svc.CheckLatestReleaseAsync(current);
+
+            LatestVersion = latest;
+            UpdateUrl = url;
+            IsUpdateAvailable = available;
+
             if (available)
             {
-                IsUpdateAvailable = true;
-                LatestVersion = latest;
-                UpdateUrl = url;
                 ShowUpdatePopup = true;
                 ShowUpdateButton = false;
             }
             else
             {
-                IsUpdateAvailable = false;
                 ShowUpdatePopup = false;
                 ShowUpdateButton = false;
             }
