@@ -41,6 +41,9 @@
                 </Transitions>
             </Setter>
         </Style>
+        <Style Selector="Button.MainAction:pointerover">
+            <Setter Property="Background" Value="#000000" />
+        </Style>
 
         <Style Selector="Button.Ready">
             <Setter Property="Background" Value="#24d81e" />
@@ -497,7 +500,7 @@
                                            VerticalAlignment="Center" />
                             </StackPanel>
 
-                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12" IsVisible="False">
+                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12">
                                 <TextBlock Text="Announcements" Foreground="White" FontSize="16" FontWeight="SemiBold"
                                            Margin="10,0,0,0" />
                                 <Border Background="#50000000" CornerRadius="10" Padding="12">
@@ -610,7 +613,7 @@
                 <Border Background="#111111" CornerRadius="12" Padding="20" Width="420">
                     <StackPanel Spacing="12">
                         <TextBlock Text="A new launcher version is available" Foreground="White" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="Version: {Binding LatestVersion}" Foreground="#CCCCCC" />
+                        <TextBlock Text="{Binding LatestVersion, StringFormat='Version: {0}'}" Foreground="#CCCCCC" />
                         <TextBlock Text="Would you like to open the release page to update now?" Foreground="#AAAAAA" TextWrapping="Wrap" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                             <Button Background="#24d81e" Foreground="Black" Width="90" Command="{Binding OpenUpdateCommand}">Update</Button>
