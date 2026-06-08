@@ -37,9 +37,6 @@ jobs:
       - name: Install 7zip
         run: sudo apt-get install -y p7zip-full
 
-      - name: Debug
-        run: ls -la publish/${{ matrix.target }}/
-
       - name: Archive
         run: |
           if [ "${{ matrix.target }}" == "windows" ]; then
