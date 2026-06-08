@@ -34,11 +34,18 @@ jobs:
 
       - run: dotnet publish -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o publish/${{ matrix.target }}
 
+      - name: Install 7zip
+        run: sudo apt-get install -y p7zip-full
+
       - name: Archive
         run: |
-          if [ "${{ matrix.target }}" == "windows" ]; then (cd publish/windows && zip -r $GITHUB_WORKSPACE/${{ matrix.asset_path }} .);
-          elif [ "${{ matrix.target }}" == "linux" ]; then tar -czf $GITHUB_WORKSPACE/${{ matrix.asset_path }} -C publish/linux .;
-          elif [ "${{ matrix.target }}" == "macos" ]; then (cd publish/macos && zip -r $GITHUB_WORKSPACE/${{ matrix.asset_path }} .); fi
+          if [ "${{ matrix.target }}" == "windows" ]; then
+            7z a -tzip $GITHUB_WORKSPACE/${{ matrix.asset_path }} ./publish/windows/*
+          elif [ "${{ matrix.target }}" == "linux" ]; then
+            tar -czf $GITHUB_WORKSPACE/${{ matrix.asset_path }} -C publish/linux .
+          elif [ "${{ matrix.target }}" == "macos" ]; then
+            7z a -tzip $GITHUB_WORKSPACE/${{ matrix.asset_path }} ./publish/macos/*
+          fi
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
