@@ -610,7 +610,7 @@
                 <Border Background="#111111" CornerRadius="12" Padding="20" Width="420">
                     <StackPanel Spacing="12">
                         <TextBlock Text="A new launcher version is available" Foreground="White" FontSize="16" FontWeight="Bold" />
-                        <TextBlock Text="Version: {Binding LatestVersion}" Foreground="#CCCCCC" />
+                        <TextBlock Text="{Binding LatestVersion, StringFormat='Version: {0}'}" Foreground="#CCCCCC" />
                         <TextBlock Text="Would you like to open the release page to update now?" Foreground="#AAAAAA" TextWrapping="Wrap" />
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                             <Button Background="#24d81e" Foreground="Black" Width="90" Command="{Binding OpenUpdateCommand}">Update</Button>

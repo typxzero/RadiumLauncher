@@ -295,7 +295,7 @@ public partial class MainWindow : Window
     {
         await FetchLatestInfo(vm);
         await UpdateLauncherState(vm);
-        string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
+        string[] info = (vm.InfoResponse ?? string.Empty).Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         string? gameExePath = GetGameExecutablePath(vm, info);
         if (string.IsNullOrEmpty(gameExePath))
         {
@@ -422,7 +422,7 @@ public partial class MainWindow : Window
             var downloadConfiguration = new DownloadConfiguration()
             {
                 BufferBlockSize = 10240,
-                ChunkCount = (int)settings.DlThreadCount,
+                ChunkCount = (int)(settings?.DlThreadCount ?? 4),
                 MaximumMemoryBufferBytes = 1024 * 1024 * 10,
                 BlockTimeout = 10000
             };

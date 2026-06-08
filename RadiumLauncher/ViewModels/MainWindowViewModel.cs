@@ -100,25 +100,18 @@ public partial class MainWindowViewModel : ViewModelBase
             var current = entry?.GetName().Version?.ToString() ?? "0.0.0";
             var svc = new UpdateService();
             var (available, latest, url) = await svc.CheckLatestReleaseAsync(current);
-            if (available)
-            {
-                IsUpdateAvailable = true;
+
                 LatestVersion = latest;
                 UpdateUrl = url;
-                ShowUpdatePopup = true;
-                ShowUpdateButton = false;
-            }
-            else
-            {
-                IsUpdateAvailable = false;
-                ShowUpdatePopup = false;
-                ShowUpdateButton = false;
-            }
-        }
-        catch
-        {
-            // ignore failures
-        }
+                IsUpdateAvailable = available;
+
+                if (available)
+                {
+                    ShowUpdatePopup = true;
+                    ShowUpdateButton = false;
+                }
+                else
+                {
     }
 
     [RelayCommand]
