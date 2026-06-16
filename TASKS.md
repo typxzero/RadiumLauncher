@@ -8,7 +8,6 @@ Tasks that are not in progress or completed are available for contribution.
 | Discord RPC | ✅ Completed |
 | MacOS Support | ✅ Completed |
 | Fix Stop button | In Progress |
-| Add Game Folder selection | In Progress |
-| Cleanup operation | In Progress |
+| Cleanup operation | ??? |
 
 No more tasks! 🎉
