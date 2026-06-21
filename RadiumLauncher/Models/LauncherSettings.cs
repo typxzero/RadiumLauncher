@@ -4,8 +4,8 @@ public class LauncherSettings
 {
     public string SelectedLaunchMode { get; set; } = "Screen";
     public string? GameFolder { get; set; }
-    public string ScreenModeBatchFile { get; set; } = "RecRoom_ScreenMode.bat";
-    public string VrModeBatchFile { get; set; } = "RecRoom_VR.bat";
+    public string ScreenModeBatchFile { get; set; }
+    public string VrModeBatchFile { get; set; }
     public string macOSWinePath { get; set; }
     public decimal DlThreadCount { get; set; } = 8;
     public string? RadiumUsername { get; set; }
