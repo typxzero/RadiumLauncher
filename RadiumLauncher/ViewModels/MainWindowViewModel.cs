@@ -45,6 +45,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private string? _infoResponse;
     [ObservableProperty] private string _screenModeBatchFile = "RecRoom_ScreenMode.bat";
     [ObservableProperty] private string _vrModeBatchFile = "RecRoom_VR.bat";
+    [ObservableProperty] private double _communityMediaItemWidth = 243;
+    [ObservableProperty] private double _communityMediaItemHeight = 140;
 
     public string GameFolder { get; set; } = string.Empty;
 

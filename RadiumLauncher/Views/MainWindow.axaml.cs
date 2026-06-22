@@ -35,12 +35,17 @@ public partial class MainWindow : Window
     private const double HomeLogoMotionLoopDuration = 5.0; // seconds per full loop
     private const double HomeLogoMotionAmplitudeX = 2.0;
     private const double HomeLogoMotionAmplitudeY = 0.8;
+    private const double DefaultWindowSizeRatio = 0.8;
+    private const double CommunityMediaHorizontalGap = 10;
+    private const double CommunityMediaVerticalGap = 12;
     private const string SettingsFileName = "launcher-settings.json";
     private const string AnnouncementsUrl = "https://raw.githubusercontent.com/typxzero/RadiumLauncherFiles/refs/heads/main/LatestNews.txt";
 
     private readonly DispatcherTimer? _inactivityTimer;
     private readonly DispatcherTimer? _titleLogoAnimationTimer;
     private bool _isInitialized;
+    private bool _isApplyingWindowBounds;
+    private bool _hasUserDefinedWindowSize;
     private double _titleLogoAnimationTime;
     private MainWindowViewModel? _currentViewModel;
     private readonly string _configFolder = Path.Combine(AppConstants.AppDataDirectory, "Configuration");
@@ -51,6 +56,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "typxzero/RadiumLauncher");
+        Opened += MainWindow_Opened;
 
         Closed += (_, _) =>
         {
@@ -62,6 +68,7 @@ public partial class MainWindow : Window
         _titleLogoAnimationTimer.Start();
 
         DataContextChanged += MainWindow_DataContextChanged;
+        SizeChanged += MainWindow_SizeChanged;
 
         var scrollViewer = this.FindControl<ScrollViewer>("ContentScrollViewer");
         if (scrollViewer != null) scrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
@@ -73,6 +80,46 @@ public partial class MainWindow : Window
         PointerMoved += MainWindow_PointerMoved;
         PointerPressed += (_, _) => ResetInactivity();
         KeyDown += (_, _) => ResetInactivity();
+    }
+
+    private void MainWindow_Opened(object? sender, EventArgs e)
+    {
+        var screen = Screens.ScreenFromVisual(this) ?? Screens.Primary;
+        if (screen == null)
+        {
+            return;
+        }
+
+        var settings = LoadLauncherSettings();
+        var workingArea = screen.WorkingArea;
+        var defaultWidth = Math.Max(MinWidth, workingArea.Width / screen.Scaling * DefaultWindowSizeRatio);
+        var defaultHeight = Math.Max(MinHeight, workingArea.Height / screen.Scaling * DefaultWindowSizeRatio);
+        var width = settings.HasUserDefinedWindowSize && settings.WindowWidth is > 0
+            ? Math.Max(MinWidth, settings.WindowWidth.Value)
+            : defaultWidth;
+        var height = settings.HasUserDefinedWindowSize && settings.WindowHeight is > 0
+            ? Math.Max(MinHeight, settings.WindowHeight.Value)
+            : defaultHeight;
+
+        ApplyWindowBounds(width, height, screen);
+        Dispatcher.UIThread.Post(() =>
+        {
+            ApplyWindowBounds(width, height, Screens.ScreenFromVisual(this) ?? screen);
+            _isApplyingWindowBounds = false;
+            UpdateCommunityMediaLayout();
+        }, DispatcherPriority.Background);
+    }
+
+    private void MainWindow_SizeChanged(object? sender, SizeChangedEventArgs e)
+    {
+        Dispatcher.UIThread.Post(UpdateCommunityMediaLayout, DispatcherPriority.Background);
+
+        if (_isApplyingWindowBounds || !_hasUserDefinedWindowSize || DataContext is not MainWindowViewModel vm || WindowState != WindowState.Normal)
+        {
+            return;
+        }
+
+        SaveSettings(vm);
     }
 
     private void MainWindow_PointerMoved(object? sender, PointerEventArgs e)
@@ -213,23 +260,88 @@ public partial class MainWindow : Window
         {
             Directory.CreateDirectory(_configFolder);
             string settingsPath = Path.Combine(_configFolder, SettingsFileName);
-            var settings = new LauncherSettings();
-            if (File.Exists(settingsPath))
-            {
-                var json = File.ReadAllText(settingsPath);
-                settings = JsonSerializer.Deserialize<LauncherSettings>(json) ?? settings;
-            }
+            var settings = LoadLauncherSettings();
 
             settings.SelectedLaunchMode = vm.SelectedLaunchMode;
             settings.GameFolder = vm.GameFolder;
             settings.ScreenModeBatchFile = vm.ScreenModeBatchFile;
             settings.VrModeBatchFile = vm.VrModeBatchFile;
+            if (WindowState == WindowState.Normal)
+            {
+                settings.WindowWidth = Width;
+                settings.WindowHeight = Height;
+                settings.UseSavedWindowSize = true;
+                settings.HasUserDefinedWindowSize = true;
+            }
             File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"Failed to save launcher settings: {ex}");
         }
+    }
+
+    private LauncherSettings LoadLauncherSettings()
+    {
+        Directory.CreateDirectory(_configFolder);
+        string settingsPath = Path.Combine(_configFolder, SettingsFileName);
+        if (!File.Exists(settingsPath))
+        {
+            return new LauncherSettings();
+        }
+
+        try
+        {
+            var json = File.ReadAllText(settingsPath);
+            return JsonSerializer.Deserialize<LauncherSettings>(json) ?? new LauncherSettings();
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to load launcher settings: {ex}");
+            return new LauncherSettings();
+        }
+    }
+
+    private void UpdateCommunityMediaLayout()
+    {
+        if (DataContext is not MainWindowViewModel vm)
+        {
+            return;
+        }
+
+        var itemsControl = this.FindControl<ItemsControl>("CommunityMediaItemsControl");
+        var availableWidth = itemsControl?.Bounds.Width ?? 0;
+        if (availableWidth <= 0)
+        {
+            return;
+        }
+
+        const double minimumCardWidth = 220;
+        var columns = Math.Max(1, (int)Math.Floor(availableWidth / minimumCardWidth));
+        var itemWidth = Math.Floor((availableWidth - (CommunityMediaHorizontalGap * columns)) / columns);
+        var itemHeight = Math.Round(itemWidth * (140d / 243d));
+
+        vm.CommunityMediaItemWidth = itemWidth;
+        vm.CommunityMediaItemHeight = itemHeight;
+    }
+
+    private void ApplyWindowBounds(double width, double height, Screen screen)
+    {
+        _isApplyingWindowBounds = true;
+        Width = width;
+        Height = height;
+
+        var workingArea = screen.WorkingArea;
+        var widthPixels = (int)Math.Round(width * screen.Scaling);
+        var heightPixels = (int)Math.Round(height * screen.Scaling);
+        Position = new PixelPoint(
+            workingArea.X + Math.Max(0, (workingArea.Width - widthPixels) / 2),
+            workingArea.Y + Math.Max(0, (workingArea.Height - heightPixels) / 2));
+    }
+
+    private void MarkWindowSizeAsUserDefined()
+    {
+        _hasUserDefinedWindowSize = true;
     }
 
     private async Task LoadAnnouncements(MainWindowViewModel vm)
@@ -966,8 +1078,9 @@ public partial class MainWindow : Window
             double relativeVisibleTop = Math.Max(0, -itemsTopInViewport);
             double relativeVisibleBottom = relativeVisibleTop + viewportHeight;
 
-            int itemsPerRow = 3;
-            double itemHeight = 150;
+            int itemsPerRow = Math.Max(1,
+                (int)Math.Floor(itemsControl.Bounds.Width / Math.Max(1, vm.CommunityMediaItemWidth + CommunityMediaHorizontalGap)));
+            double itemHeight = vm.CommunityMediaItemHeight + CommunityMediaVerticalGap;
             int startRow = (int)Math.Max(0, Math.Floor(relativeVisibleTop / itemHeight) - 1);
             int endRow = (int)Math.Ceiling(relativeVisibleBottom / itemHeight) + 1;
 
@@ -1069,6 +1182,11 @@ public partial class MainWindow : Window
         WindowState = WindowState.Minimized;
     }
 
+    public void FullscreenButton_Click(object? sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    }
+
     public void CloseButton_Click(object? sender, RoutedEventArgs e)
     {
         Close();
@@ -1102,41 +1220,49 @@ public partial class MainWindow : Window
 
     private void ResizeTop_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.North, e);
     }
 
     private void ResizeBottom_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.South, e);
     }
 
     private void ResizeLeft_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.West, e);
     }
 
     private void ResizeRight_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.East, e);
     }
 
     private void ResizeTopLeft_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.NorthWest, e);
     }
 
     private void ResizeTopRight_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.NorthEast, e);
     }
 
     private void ResizeBottomLeft_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.SouthWest, e);
     }
 
     private void ResizeBottomRight_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.SouthEast, e);
     }
 }

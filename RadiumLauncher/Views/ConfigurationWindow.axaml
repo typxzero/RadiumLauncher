@@ -117,13 +117,6 @@
                         <TextBox x:Name="Usernameopttb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
                                  CornerRadius="4" TextChanged="Username_Changed"/>
                     </StackPanel>
-                    
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Downloader Thread Count" Foreground="#888888" FontSize="12" />
-                        <NumericUpDown x:Name="Threadcountnud" Background="#1A1A1A" BorderBrush="#2D2D2D"
-                                       CornerRadius="4" ValueChanged="ThreadCount_Changed" Minimum="1" 
-                                       Increment="1" FormatString="F0"/>
-                    </StackPanel>
 
                     <StackPanel x:Name="ProtonOption" Spacing="5" IsVisible="False">
                         <TextBlock Text="Proton Folder (Linux)" Foreground="#888888" FontSize="12" />
@@ -135,17 +128,6 @@
                         <TextBlock Text="Wine Path (macOS)" Foreground="#888888" FontSize="12" />
                         <TextBox x:Name="Winepathtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
                                  CornerRadius="4" TextChanged="WinePath_Changed" />
-                    </StackPanel>
-                    
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Steam App Id" Foreground="#888888" FontSize="12" />
-                        <TextBox x:Name="Steamappidtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                                 CornerRadius="4" TextChanged="SteamAppId_Changed" />
-                    </StackPanel>
-                    <StackPanel Spacing="5">
-                        <TextBlock Text="Launch Options" Foreground="#888888" FontSize="12" />
-                        <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
-                                 CornerRadius="4" TextChanged="LaunchOptions_Changed" />
                     </StackPanel>
 
                     <StackPanel Spacing="8">
@@ -163,6 +145,24 @@
                     
                     <Expander x:Name="AdvancedOptions" Header="Advanced" IsExpanded="False">
                         <StackPanel Spacing="10" Margin="0,10,0,0">
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Steam App Id" Foreground="White" FontSize="13" />
+                                <TextBox x:Name="Steamappidtb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="SteamAppId_Changed" />
+                                <TextBlock Text="Please don't change unless you know what you're doing." 
+                                       Foreground="#888888" FontSize="11" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Downloader Thread Count" Foreground="White" FontSize="13" />
+                                <NumericUpDown x:Name="Threadcountnud" Background="#1A1A1A" BorderBrush="#2D2D2D"
+                                               CornerRadius="4" ValueChanged="ThreadCount_Changed" Minimum="1"
+                                               Increment="1" FormatString="F0"/>
+                            </StackPanel>
+                            <StackPanel Spacing="5">
+                                <TextBlock Text="Launch Options" Foreground="White" FontSize="13" />
+                                <TextBox x:Name="Launchoptstb" Background="#1A1A1A" Foreground="White" BorderBrush="#2D2D2D"
+                                         CornerRadius="4" TextChanged="LaunchOptions_Changed" />
+                            </StackPanel>
                             <TextBlock Text="Custom Batch File Paths" Foreground="White" FontSize="13" FontWeight="SemiBold" />
                             <StackPanel Spacing="5">
                                 <TextBlock Text="Screen Mode Batch File" Foreground="#888888" FontSize="12" />

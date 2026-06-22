@@ -10,4 +10,8 @@ public class LauncherSettings
     public decimal DlThreadCount { get; set; } = 8;
     public string? RadiumUsername { get; set; }
     public bool? DiscordRpcEnabled { get; set; } = false;
+    public double? WindowWidth { get; set; }
+    public double? WindowHeight { get; set; }
+    public bool UseSavedWindowSize { get; set; }
+    public bool HasUserDefinedWindowSize { get; set; }
 }

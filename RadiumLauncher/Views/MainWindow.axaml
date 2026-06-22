@@ -15,6 +15,8 @@
         Background="#000000"
         Width="800"
         Height="450"
+        MinWidth="640"
+        MinHeight="360"
         CanResize="True"
         WindowStartupLocation="CenterScreen">
     <Design.DataContext>
@@ -326,6 +328,12 @@
                                 Padding="8,4"
                                 Click="MinimizeButton_Click" />
 
+                        <Button Content="□"
+                            Background="Transparent"
+                            Foreground="#888888"
+                            Padding="8,4"
+                            Click="FullscreenButton_Click" />
+
                         <Button Content="✕"
                                 x:Name="CloseButton"
                                 Background="Transparent"
@@ -526,17 +534,20 @@
                                       ClipToBounds="False">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <UniformGrid Columns="3" ClipToBounds="False" />
+                                    <WrapPanel Orientation="Horizontal" ClipToBounds="False" />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate DataType="m:FeedItem">
-                                    <Button Padding="0" Margin="5" Background="Transparent" BorderThickness="0"
+                                    <Button Padding="0" Margin="0,0,10,12" Background="Transparent" BorderThickness="0"
                                             Classes="ImageButton"
+                                            Width="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CommunityMediaItemWidth, FallbackValue=243}"
                                             Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).MaximizePhotoCommand, FallbackValue={x:Null}}"
                                             CommandParameter="{Binding}">
                                         <Border Name="ImageRoot" CornerRadius="12" ClipToBounds="True"
-                                                Background="#000000" Width="243" Height="140">
+                                                Background="#000000"
+                                                Width="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CommunityMediaItemWidth, FallbackValue=243}"
+                                                Height="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).CommunityMediaItemHeight, FallbackValue=140}">
                                             <Panel>
                                                 <Image
                                                     Source="{Binding Bitmap, FallbackValue={x:Null}, TargetNullValue={x:Null}}"

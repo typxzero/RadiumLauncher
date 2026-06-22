@@ -58,11 +58,10 @@ public partial class ConfigurationWindow : Window
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
             ProtonOption.IsVisible = true;
-            AdvancedOptions.IsVisible = false; // replace when linux gets an advanced feature
-        } else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             WineOption.IsVisible = true;
-            AdvancedOptions.IsVisible = false; // same thing here
         }
     }
 
@@ -118,38 +117,39 @@ public partial class ConfigurationWindow : Window
         }
     }
 
-    private void ThreadCount_Changed(object? sender, RoutedEventArgs e)
+    private void ThreadCount_Changed(object? sender, NumericUpDownValueChangedEventArgs e)
     {
         SaveSettings();
     }
 
-    private void ProtonPath_Changed(object? sender, RoutedEventArgs e)
+    private void ProtonPath_Changed(object? sender, TextChangedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "protonpath.txt"), Protonpathtb.Text ?? string.Empty);
     }
     
-    private void WinePath_Changed(object? sender, RoutedEventArgs e)
+    private void WinePath_Changed(object? sender, TextChangedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "winepath.txt"), Winepathtb.Text ?? string.Empty);
     }
 
-    private void SteamAppId_Changed(object? sender, RoutedEventArgs e)
+    private void SteamAppId_Changed(object? sender, TextChangedEventArgs e)
     {
-        File.WriteAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt"), Steamappidtb.Text);
-        AppConstants.SteamAppId = Steamappidtb.Text;
+        var steamAppId = Steamappidtb.Text ?? string.Empty;
+        File.WriteAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt"), steamAppId);
+        AppConstants.SteamAppId = steamAppId;
     }
 
-    private void LaunchOptions_Changed(object? sender, RoutedEventArgs e)
+    private void LaunchOptions_Changed(object? sender, TextChangedEventArgs e)
     {
         File.WriteAllText(Path.Combine(_configFolder, "launchoptions.txt"), Launchoptstb.Text ?? "%command%");
     }
 
-    private void ScreenBatchFile_Changed(object? sender, RoutedEventArgs e)
+    private void ScreenBatchFile_Changed(object? sender, TextChangedEventArgs e)
     {
         SaveSettings();
     }
 
-    private void VrBatchFile_Changed(object? sender, RoutedEventArgs e)
+    private void VrBatchFile_Changed(object? sender, TextChangedEventArgs e)
     {
         SaveSettings();
     }
