@@ -229,7 +229,8 @@
 
         <Border BorderBrush="#2D2D2D" BorderThickness="1" ZIndex="100" IsHitTestVisible="False" />
         <Panel IsHitTestVisible="False" ClipToBounds="False">
-            <Border Background="#000000"
+            <Border x:Name="TopLeftShadowGlow"
+                    Background="#000000"
                     Width="900" Height="900"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Top"
@@ -240,7 +241,8 @@
                     <BlurEffect Radius="150" />
                 </Border.Effect>
             </Border>
-            <Border Background="#000000"
+            <Border x:Name="TopRightShadowGlow"
+                    Background="#000000"
                     Width="700" Height="700"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
@@ -266,7 +268,8 @@
                     <TranslateTransform />
                 </Border.RenderTransform>
             </Border>
-            <Border HorizontalAlignment="Center"
+                <Border x:Name="CenterAtmosphereGlow"
+                    HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Width="1200"
                     Height="700"
@@ -278,7 +281,8 @@
                 </Border.Effect>
             </Border>
             <Panel IsHitTestVisible="False" ClipToBounds="False">
-                <Border HorizontalAlignment="Center"
+                <Border x:Name="TopAccentGlow"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Top"
                         Margin="0,-250,0,0"
                         Width="400"
@@ -289,6 +293,9 @@
                     <Border.Effect>
                         <BlurEffect Radius="500" />
                     </Border.Effect>
+                    <Border.RenderTransform>
+                        <TranslateTransform />
+                    </Border.RenderTransform>
                 </Border>
             </Panel>
         </Panel>

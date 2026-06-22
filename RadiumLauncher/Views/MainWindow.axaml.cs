@@ -107,12 +107,17 @@ public partial class MainWindow : Window
             ApplyWindowBounds(width, height, Screens.ScreenFromVisual(this) ?? screen);
             _isApplyingWindowBounds = false;
             UpdateCommunityMediaLayout();
+            UpdateBackgroundLightingLayout();
         }, DispatcherPriority.Background);
     }
 
     private void MainWindow_SizeChanged(object? sender, SizeChangedEventArgs e)
     {
-        Dispatcher.UIThread.Post(UpdateCommunityMediaLayout, DispatcherPriority.Background);
+        Dispatcher.UIThread.Post(() =>
+        {
+            UpdateCommunityMediaLayout();
+            UpdateBackgroundLightingLayout();
+        }, DispatcherPriority.Background);
 
         if (_isApplyingWindowBounds || !_hasUserDefinedWindowSize || DataContext is not MainWindowViewModel vm || WindowState != WindowState.Normal)
         {
@@ -125,16 +130,24 @@ public partial class MainWindow : Window
     private void MainWindow_PointerMoved(object? sender, PointerEventArgs e)
     {
         ResetInactivity();
+        var position = e.GetPosition(this);
+        var centerX = Bounds.Width / 2;
+        var centerY = Bounds.Height / 2;
+        if (centerX <= 0 || centerY <= 0)
+        {
+            return;
+        }
+
         if (HomeBackgroundLayer?.RenderTransform is TranslateTransform backgroundTransform)
         {
-            var position = e.GetPosition(this);
-            var centerX = Bounds.Width / 2;
-            var centerY = Bounds.Height / 2;
-            if (centerX > 0 && centerY > 0)
-            {
-                backgroundTransform.X = (position.X - centerX) / centerX * 18;
-                backgroundTransform.Y = (position.Y - centerY) / centerY * 12;
-            }
+            backgroundTransform.X = (position.X - centerX) / centerX * 18;
+            backgroundTransform.Y = (position.Y - centerY) / centerY * 12;
+        }
+
+        if (TopAccentGlow?.RenderTransform is TranslateTransform topGlowTransform)
+        {
+            topGlowTransform.X = (position.X - centerX) / centerX * 8;
+            topGlowTransform.Y = (position.Y - centerY) / centerY * 6;
         }
     }
 
@@ -323,6 +336,62 @@ public partial class MainWindow : Window
 
         vm.CommunityMediaItemWidth = itemWidth;
         vm.CommunityMediaItemHeight = itemHeight;
+    }
+
+    private void UpdateBackgroundLightingLayout()
+    {
+        var width = Bounds.Width;
+        var height = Bounds.Height;
+        if (width <= 0 || height <= 0)
+        {
+            return;
+        }
+
+        var leftGlowDiameter = Math.Max(700, Math.Max(width, height) * 1.05);
+        var rightGlowDiameter = Math.Max(520, Math.Max(width, height) * 0.82);
+        var centerGlowWidth = Math.Max(900, width * 1.35);
+        var centerGlowHeight = Math.Max(520, height * 0.95);
+        var bottomGlowWidth = Math.Max(780, width * 1.2);
+        var bottomGlowHeight = Math.Max(420, height * 0.72);
+        var topAccentDiameter = Math.Max(320, Math.Min(width, height) * 0.58);
+
+        if (TopLeftShadowGlow != null)
+        {
+            TopLeftShadowGlow.Width = leftGlowDiameter;
+            TopLeftShadowGlow.Height = leftGlowDiameter;
+            TopLeftShadowGlow.CornerRadius = new CornerRadius(leftGlowDiameter / 2);
+            TopLeftShadowGlow.Margin = new Thickness(-leftGlowDiameter * 0.3, -leftGlowDiameter * 0.4, 0, 0);
+        }
+
+        if (TopRightShadowGlow != null)
+        {
+            TopRightShadowGlow.Width = rightGlowDiameter;
+            TopRightShadowGlow.Height = rightGlowDiameter;
+            TopRightShadowGlow.CornerRadius = new CornerRadius(rightGlowDiameter / 2);
+            TopRightShadowGlow.Margin = new Thickness(0, -rightGlowDiameter * 0.43, -rightGlowDiameter * 0.3, 0);
+        }
+
+        if (HomeBackgroundLayer != null)
+        {
+            HomeBackgroundLayer.Width = bottomGlowWidth;
+            HomeBackgroundLayer.Height = bottomGlowHeight;
+            HomeBackgroundLayer.CornerRadius = new CornerRadius(bottomGlowHeight / 2);
+            HomeBackgroundLayer.Margin = new Thickness(0, 0, 0, -bottomGlowHeight * 0.34);
+        }
+
+        if (CenterAtmosphereGlow != null)
+        {
+            CenterAtmosphereGlow.Width = centerGlowWidth;
+            CenterAtmosphereGlow.Height = centerGlowHeight;
+        }
+
+        if (TopAccentGlow != null)
+        {
+            TopAccentGlow.Width = topAccentDiameter;
+            TopAccentGlow.Height = topAccentDiameter;
+            TopAccentGlow.CornerRadius = new CornerRadius(topAccentDiameter / 2);
+            TopAccentGlow.Margin = new Thickness(0, -topAccentDiameter * 0.63, 0, 0);
+        }
     }
 
     private void ApplyWindowBounds(double width, double height, Screen screen)
