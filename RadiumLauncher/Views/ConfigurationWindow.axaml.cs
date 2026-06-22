@@ -31,6 +31,10 @@ public partial class ConfigurationWindow : Window
 
         _settingsPath = Path.Combine(_configFolder, SettingsFileName);
 
+        string winePathFile = Path.Combine(_configFolder, "winepath.txt");
+
+        string currentWinePath = File.Exists(winePathFile) ? File.ReadAllText(winePathFile) : string.Empty;
+        
         string protonPathFile = Path.Combine(_configFolder, "protonpath.txt");
         string launchOptionsFile = Path.Combine(_configFolder, "launchoptions.txt");
         string steamAppIdFile = Path.Combine(AppConstants.GameFolder, "steam_appid.txt");
@@ -45,6 +49,7 @@ public partial class ConfigurationWindow : Window
         }
         
         Protonpathtb.Text = currentProtonPath;
+        Winepathtb.Text = currentWinePath;
         Launchoptstb.Text = currentLaunchOptions;
         Steamappidtb.Text = File.ReadAllText(Path.Combine(AppConstants.GameFolder, "steam_appid.txt")).Trim();
         

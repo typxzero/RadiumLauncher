@@ -41,6 +41,9 @@
                 </Transitions>
             </Setter>
         </Style>
+        <Style Selector="Button.MainAction:pointerover">
+            <Setter Property="Background" Value="#000000" />
+        </Style>
 
         <Style Selector="Button.Ready">
             <Setter Property="Background" Value="#24d81e" />
@@ -497,7 +500,7 @@
                                            VerticalAlignment="Center" />
                             </StackPanel>
 
-                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12" IsVisible="False">
+                            <StackPanel x:Name="AnnouncementsPanel" Spacing="12">
                                 <TextBlock Text="Announcements" Foreground="White" FontSize="16" FontWeight="SemiBold"
                                            Margin="10,0,0,0" />
                                 <Border Background="#50000000" CornerRadius="10" Padding="12">
