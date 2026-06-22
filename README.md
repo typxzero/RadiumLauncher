@@ -8,11 +8,10 @@ An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
 </div>
 
-## v1.2.0 Update for RadiumLauncher is here
-- Discord Rich Presence
-- Multi-threaded downloading
-- macOS support using wine
-- Check API before launch
+## v1.2.2 Update for RadiumLauncher is here
+- Put advanced settings back where they belong (in the advanced tab)
+- Adds window scaling persistance, now you shouldn't have to fight the launcher for your preffered size
+- Makes default size to 80% of your monitor + Maximize button!
 
 ## Download
 
