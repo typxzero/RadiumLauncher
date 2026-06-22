@@ -94,10 +94,11 @@ public partial class MainWindow : Window
         var workingArea = screen.WorkingArea;
         var defaultWidth = Math.Max(MinWidth, workingArea.Width / screen.Scaling * DefaultWindowSizeRatio);
         var defaultHeight = Math.Max(MinHeight, workingArea.Height / screen.Scaling * DefaultWindowSizeRatio);
-        var width = settings.HasUserDefinedWindowSize && settings.WindowWidth is > 0
+        _hasUserDefinedWindowSize = settings.WindowSizeSetByUserResize;
+        var width = settings.WindowSizeSetByUserResize && settings.WindowWidth is > 0
             ? Math.Max(MinWidth, settings.WindowWidth.Value)
             : defaultWidth;
-        var height = settings.HasUserDefinedWindowSize && settings.WindowHeight is > 0
+        var height = settings.WindowSizeSetByUserResize && settings.WindowHeight is > 0
             ? Math.Max(MinHeight, settings.WindowHeight.Value)
             : defaultHeight;
 
@@ -285,6 +286,7 @@ public partial class MainWindow : Window
                 settings.WindowHeight = Height;
                 settings.UseSavedWindowSize = true;
                 settings.HasUserDefinedWindowSize = true;
+                settings.WindowSizeSetByUserResize = _hasUserDefinedWindowSize;
             }
             File.WriteAllText(settingsPath, JsonSerializer.Serialize(settings, new JsonSerializerOptions { WriteIndented = true }));
         }

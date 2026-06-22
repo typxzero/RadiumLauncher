@@ -14,4 +14,5 @@ public class LauncherSettings
     public double? WindowHeight { get; set; }
     public bool UseSavedWindowSize { get; set; }
     public bool HasUserDefinedWindowSize { get; set; }
+    public bool WindowSizeSetByUserResize { get; set; }
 }
