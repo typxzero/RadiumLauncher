@@ -104,8 +104,8 @@ public partial class ConfigurationWindow : Window
                 settings = JsonSerializer.Deserialize<LauncherSettings>(json) ?? settings;
             }
 
-            settings.ScreenModeBatchFile = ScreenBatchFileTb.Text ?? "RecRoom_ScreenMode.bat";
-            settings.VrModeBatchFile = VrBatchFileTb.Text ?? "RecRoom_VR.bat";
+            settings.ScreenModeBatchFile = ScreenBatchFileTb.Text;
+            settings.VrModeBatchFile = VrBatchFileTb.Text;
             settings.DlThreadCount = Threadcountnud.Value ?? 8;
             settings.DiscordRpcEnabled = DiscordRPCOption.IsChecked;
             settings.RadiumUsername = Usernameopttb.Text;
