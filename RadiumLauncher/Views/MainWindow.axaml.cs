@@ -92,8 +92,8 @@ public partial class MainWindow : Window
 
         var settings = LoadLauncherSettings();
         var workingArea = screen.WorkingArea;
-        var defaultWidth = Math.Max(MinWidth, workingArea.Width / screen.Scaling * DefaultWindowSizeRatio);
-        var defaultHeight = Math.Max(MinHeight, workingArea.Height / screen.Scaling * DefaultWindowSizeRatio);
+        var defaultWidth = Math.Max(MinWidth, Width);
+        var defaultHeight = Math.Max(MinHeight, Height);
         _hasUserDefinedWindowSize = settings.WindowSizeSetByUserResize;
         var width = settings.WindowSizeSetByUserResize && settings.WindowWidth is > 0
             ? Math.Max(MinWidth, settings.WindowWidth.Value)
@@ -349,20 +349,23 @@ public partial class MainWindow : Window
             return;
         }
 
-        var leftGlowDiameter = Math.Max(700, Math.Max(width, height) * 1.05);
-        var rightGlowDiameter = Math.Max(520, Math.Max(width, height) * 0.82);
-        var centerGlowWidth = Math.Max(900, width * 1.35);
-        var centerGlowHeight = Math.Max(520, height * 0.95);
-        var bottomGlowWidth = Math.Max(780, width * 1.2);
-        var bottomGlowHeight = Math.Max(420, height * 0.72);
-        var topAccentDiameter = Math.Max(320, Math.Min(width, height) * 0.58);
+        var dim = Math.Max(width, height);
+        var minDim = Math.Min(width, height);
+
+        var leftGlowDiameter = Math.Max(700, dim * 1.125);
+        var rightGlowDiameter = Math.Max(520, dim * 0.875);
+        var centerGlowWidth = Math.Max(900, width * 1.5);
+        var centerGlowHeight = Math.Max(520, height * 1.556);
+        var bottomGlowWidth = Math.Max(780, width * 1.25);
+        var bottomGlowHeight = Math.Max(420, height * 1.333);
+        var topAccentDiameter = Math.Max(320, minDim * 0.889);
 
         if (TopLeftShadowGlow != null)
         {
             TopLeftShadowGlow.Width = leftGlowDiameter;
             TopLeftShadowGlow.Height = leftGlowDiameter;
             TopLeftShadowGlow.CornerRadius = new CornerRadius(leftGlowDiameter / 2);
-            TopLeftShadowGlow.Margin = new Thickness(-leftGlowDiameter * 0.3, -leftGlowDiameter * 0.4, 0, 0);
+            TopLeftShadowGlow.Margin = new Thickness(-leftGlowDiameter * 0.278, -leftGlowDiameter * 0.389, 0, 0);
         }
 
         if (TopRightShadowGlow != null)
@@ -370,7 +373,7 @@ public partial class MainWindow : Window
             TopRightShadowGlow.Width = rightGlowDiameter;
             TopRightShadowGlow.Height = rightGlowDiameter;
             TopRightShadowGlow.CornerRadius = new CornerRadius(rightGlowDiameter / 2);
-            TopRightShadowGlow.Margin = new Thickness(0, -rightGlowDiameter * 0.43, -rightGlowDiameter * 0.3, 0);
+            TopRightShadowGlow.Margin = new Thickness(0, -rightGlowDiameter * 0.429, -rightGlowDiameter * 0.286, 0);
         }
 
         if (HomeBackgroundLayer != null)
@@ -378,7 +381,7 @@ public partial class MainWindow : Window
             HomeBackgroundLayer.Width = bottomGlowWidth;
             HomeBackgroundLayer.Height = bottomGlowHeight;
             HomeBackgroundLayer.CornerRadius = new CornerRadius(bottomGlowHeight / 2);
-            HomeBackgroundLayer.Margin = new Thickness(0, 0, 0, -bottomGlowHeight * 0.34);
+            HomeBackgroundLayer.Margin = new Thickness(0, 0, 0, -bottomGlowHeight * 0.333);
         }
 
         if (CenterAtmosphereGlow != null)
@@ -392,7 +395,7 @@ public partial class MainWindow : Window
             TopAccentGlow.Width = topAccentDiameter;
             TopAccentGlow.Height = topAccentDiameter;
             TopAccentGlow.CornerRadius = new CornerRadius(topAccentDiameter / 2);
-            TopAccentGlow.Margin = new Thickness(0, -topAccentDiameter * 0.63, 0, 0);
+            TopAccentGlow.Margin = new Thickness(0, -topAccentDiameter * 0.625, 0, 0);
         }
     }
 
