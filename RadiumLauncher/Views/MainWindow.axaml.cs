@@ -1189,17 +1189,17 @@ public partial class MainWindow : Window
                 {
                     try
                     {
-                        var checkApiRes = await _httpClient.GetAsync("https://api.radie.app/", cts.Token);
+                        var checkApiRes = await _httpClient.GetAsync("https://radie.app/", cts.Token);
                         apiAvailable = checkApiRes.IsSuccessStatusCode;
                     }
                     catch (TaskCanceledException ex) when (ex.CancellationToken == cts.Token)
                     {
-                        Debug.WriteLine("API check timed out.");
+                        Debug.WriteLine("Server check timed out.");
                         apiAvailable = false;
                     }
                     catch (Exception ex)
                     {
-                        Debug.WriteLine($"Error checking API status: {ex}");
+                        Debug.WriteLine($"Error checking server status: {ex}");
                         apiAvailable = false;
                     }
                 }
@@ -1211,8 +1211,8 @@ public partial class MainWindow : Window
                 else
                 {
                     var confirm = new ConfirmationWindow(
-                        "Confirm Launch",
-                        $"Radium's API server is down. Would you like to continue anyway?",
+                        "Server Unavailable",
+                        $"Radium's server is down or unavailable. Would you like to continue anyway?",
                         "Yes",
                         "No")
                     {
