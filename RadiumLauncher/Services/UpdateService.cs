@@ -19,7 +19,7 @@ public class UpdateService
         var url = $"https://api.github.com/repos/{repo}/releases/latest";
 
         using var req = new HttpRequestMessage(HttpMethod.Get, url);
-        req.Headers.UserAgent.ParseAdd("RadiumLauncher-Updater");
+        req.Headers.UserAgent.ParseAdd("typxzero/RadiumLauncher");
 
         using var resp = await _httpClient.SendAsync(req).ConfigureAwait(false);
         if (!resp.IsSuccessStatusCode) return (false, string.Empty, string.Empty);

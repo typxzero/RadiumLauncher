@@ -383,9 +383,17 @@
                                             <DropDownButton.Flyout>
                                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
                                                     <MenuItem Header="Screen" Command="{Binding SetLaunchModeCommand}"
-                                                              CommandParameter="Screen" />
+                                                              CommandParameter="Screen">
+                                                        <MenuItem.Icon>
+                                                            <Image Source="/Assets/monitor-white.png" Width="15" Height="15" />
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
                                                     <MenuItem Header="VR" Command="{Binding SetLaunchModeCommand}"
-                                                              CommandParameter="VR" />
+                                                              CommandParameter="VR">
+                                                        <MenuItem.Icon>
+                                                            <Image Source="/Assets/vr-white.png" Width="15" Height="15" />
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
                                                 </MenuFlyout>
                                             </DropDownButton.Flyout>
                                             <StackPanel Orientation="Horizontal" Spacing="6"
