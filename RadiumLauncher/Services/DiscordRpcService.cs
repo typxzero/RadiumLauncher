@@ -22,6 +22,7 @@ public class DiscordRpcService
     private readonly Timer _timer = new Timer();
     private bool _isRpcActive = false;
     
+    // radium 2023 might have it's own Discord RPC, so remove this if they do (because it will probably be better than this)
     public DiscordRpcService(MainWindowViewModel vm)
     {
         _settingsPath = Path.Combine(_configFolder, SettingsFileName);
