@@ -76,11 +76,11 @@ public partial class ConfigurationWindow : Window
                 settings = JsonSerializer.Deserialize<LauncherSettings>(json) ?? settings;
             }
 
-            ScreenBatchFileTb.Text = string.IsNullOrWhiteSpace(settings.ScreenModeBatchFile)
-                ? "RecRoom_ScreenMode.bat"
+            ScreenBatchFileTb.Text = settings.ScreenModeBatchFile == null
+                ? ""
                 : settings.ScreenModeBatchFile;
-            VrBatchFileTb.Text = string.IsNullOrWhiteSpace(settings.VrModeBatchFile)
-                ? "RecRoom_VR.bat"
+            VrBatchFileTb.Text = settings.VrModeBatchFile == null
+                ? ""
                 : settings.VrModeBatchFile;
             Threadcountnud.Value = settings.DlThreadCount;
             DiscordRPCOption.IsChecked = settings.DiscordRpcEnabled;
@@ -88,8 +88,8 @@ public partial class ConfigurationWindow : Window
         }
         catch
         {
-            ScreenBatchFileTb.Text = "RecRoom_ScreenMode.bat";
-            VrBatchFileTb.Text = "RecRoom_VR.bat";
+            ScreenBatchFileTb.Text = "";
+            VrBatchFileTb.Text = "";
         }
     }
 
