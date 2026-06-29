@@ -74,28 +74,36 @@ public class DiscordRpcService
 
     private async Task<string> GetCurrentRoom(string username)
     {
-        var userPage = await _httpClient.GetStringAsync($"https://www.radie.app/user/{username}");
-        
-        var doc = new HtmlDocument();
-        doc.LoadHtml(userPage);
-    
-        var node = doc.DocumentNode.SelectSingleNode("//p[contains(text(), '@')]/parent::div/following-sibling::p");
-
-        if (node != null)
+        try
         {
-            if (node.InnerText.Trim() == "^")
+            var userPage = await _httpClient.GetStringAsync($"https://www.radie.app/user/{username}");
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(userPage);
+
+            var node = doc.DocumentNode.SelectSingleNode("//p[contains(text(), '@')]/parent::div/following-sibling::p");
+
+            if (node != null)
             {
-                return "offline dorm room";
+                if (node.InnerText.Trim() == "^")
+                {
+                    return "offline dorm room";
+                }
+                else if (node.InnerText.Trim() == "[OFFLINE]")
+                {
+                    return "menu";
+                }
+                else if (node.InnerText.Trim() == "[PRIVATE]")
+                {
+                    return "a private room";
+                }
+                else return node.InnerText.Trim();
             }
-            else if (node.InnerText.Trim() == "[OFFLINE]")
-            {
-                return "menu";
-            }
-            else if (node.InnerText.Trim() == "[PRIVATE]")
-            {
-                return "a private room";
-            }
-            else return node.InnerText.Trim();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return "an Unknown Room";
         }
 
         return "an Unknown Room";

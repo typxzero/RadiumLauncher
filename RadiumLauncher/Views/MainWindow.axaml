@@ -311,8 +311,8 @@
                 PointerPressed="TitleBar_PointerPressed">
                 <Grid ColumnDefinitions="*, Auto">
                     <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
-                        <Image Width="24" Height="24" Source="/Assets/radium-icon.png" />
-                        <Image Width="128" Height="24" Source="/Assets/radium-logo.png" Stretch="Uniform" />
+                        <Image x:Name="IconImage" Width="24" Height="24" Source="/Assets/radium-icon.png" Stretch="Uniform" />
+                        <Image x:Name="LogoImage" Width="128" Height="24" Source="/Assets/radium-logo.png" Stretch="Uniform" />
                         <TextBlock Text="Launcher"
                                    Foreground="White"
                                    FontSize="12"
@@ -361,8 +361,8 @@
                             <Grid.RenderTransform>
                                 <TranslateTransform />
                             </Grid.RenderTransform>
-                            <Image Source="{Binding MainLogo, FallbackValue={x:Null}, TargetNullValue={x:Null}}"
-                                   Width="300" HorizontalAlignment="Center" />
+                            <Image x:Name="MainLogoImage" Source="{Binding MainLogo, FallbackValue={x:Null}, TargetNullValue={x:Null}}"
+                                   Width="300" HorizontalAlignment="Center" PointerPressed="MainLogoImage_OnPointerPressed" />
                         </Grid>
 
                         <StackPanel Spacing="12">
