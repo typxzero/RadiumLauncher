@@ -4,14 +4,18 @@
 
 An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
-![Preview](Assets/v1.2.0-preview.png)
+![Preview](Assets/v1.2.3-preview.png)
 
 </div>
 
-## v1.2.2 Update for RadiumLauncher is here
-- Put advanced settings back where they belong (in the advanced tab)
-- Adds window scaling persistance, now you shouldn't have to fight the launcher for your preffered size
-- Makes default size to 80% of your monitor + Maximize button!
+## v1.2.3 Update for RadiumLauncher is here
+- TenWholeYears support!
+- Icons in vr-screen menu flyout.
+- Fixed batch file defaults.
+- Revert to old glow.
+- Revert old to default size.
+- Check radie.app instead of api.radie.app
+- Discord RPC service no longer causes a crash when Radium is down.
 
 ## Download
 
@@ -36,6 +40,7 @@ Visit the latest release page for the download: [Latest Release](https://github.
 - Multi-threaded downloading
 - macOS support using wine
 - Discord Rich Presence
+- TenWholeYears support
 
 ## ⚠️ Warning
 
