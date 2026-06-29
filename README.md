@@ -40,7 +40,7 @@ Visit the latest release page for the download: [Latest Release](https://github.
 - Multi-threaded downloading
 - macOS support using wine
 - Discord Rich Presence
-- TenWholeYears support
+- TenWholeYears support (Windows & Linux only)
 
 ## ⚠️ Warning
 
