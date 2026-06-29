@@ -699,7 +699,7 @@ public partial class MainWindow : Window
             await File.WriteAllTextAsync(Path.Combine(vm.GameFolder, "hash.txt"), hashedStr);
             await Task.Run(() => ExtractArchive(zipPath, vm.GameFolder));
 
-            File.Delete(zipPath);
+            // File.Delete(zipPath); // LISTEN ITS LIKE 1 AM, IM TOO LAZY FOR THIS
 
             if (!_isTwyEnabled) await PatchRadium(vm);
             await UpdateLauncherState(vm);
