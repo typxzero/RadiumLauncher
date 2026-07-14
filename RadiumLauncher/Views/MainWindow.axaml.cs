@@ -596,6 +596,7 @@ public partial class MainWindow : Window
         {
             string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
             string downloadUrl;
+            string expectedHash;
             if (_isTwyEnabled)
             {
                 if (vm.OperatingSystemName == "Windows")
@@ -606,20 +607,20 @@ public partial class MainWindow : Window
                 {
                     downloadUrl = info[5].Trim();
                 }
+
+                if (vm.OperatingSystemName == "Windows")
+                {
+                    expectedHash = info[1].Trim();
+                }
+                else
+                {
+                    expectedHash = info[6].Trim();
+                }
             }
             else
             {
                 downloadUrl = info[0].Trim();
-            }
-
-            string expectedHash;
-            if (vm.OperatingSystemName == "Windows")
-            {
                 expectedHash = info[1].Trim();
-            }
-            else
-            {
-                expectedHash = info[6].Trim();
             }
 
             vm.CurrentState = LauncherState.Downloading;
@@ -744,13 +745,9 @@ public partial class MainWindow : Window
             }
             else
             {
-                Process? chmodProcess = Process.Start(new ProcessStartInfo("chmod", $"+x \"{scriptPath}\""));
-
-                chmodProcess?.Exited += (_, _) =>
-                {
-                    pInfo.FileName = "/bin/bash";
-                    pInfo.Arguments = $"\"{scriptPath}\" \"{binaryPath}\"";
-                };
+                await Process.Start(new ProcessStartInfo("chmod", $"+x \"{scriptPath}\""))!.WaitForExitAsync();
+                pInfo.FileName = "/bin/bash";
+                pInfo.Arguments = $"\"{scriptPath}\" \"{binaryPath}\"";
             }
 
             var process = Process.Start(pInfo);
@@ -1075,21 +1072,7 @@ public partial class MainWindow : Window
             }
             else
             {
-                string compatDataPath = Path.Combine(vm.GameFolder, "compatdata_radium");
-                var pInfo = new ProcessStartInfo("bash", $"-c \"WINEPREFIX='{compatDataPath}/pfx' wineserver -k\"")
-                {
-                    CreateNoWindow = true,
-                };
-
-                var p = Process.Start(pInfo);
-                if (p != null) await p.WaitForExitAsync();
-
-                await Task.Delay(2000);
-
-                if (!gameProcess.HasExited)
-                {
-                    gameProcess.Kill(true);
-                }
+                gameProcess.Kill(true);
             }
         }
         catch (Exception ex)
