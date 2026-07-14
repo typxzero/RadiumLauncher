@@ -131,9 +131,9 @@
                     </StackPanel>
 
                     <StackPanel Spacing="8">
-                        <Button x:Name="UninstallButton"
-                                Content="Uninstall Radium"
-                                Click="UninstallButton_Click"
+                        <Button x:Name="DeleteDataButton"
+                                Content="Delete Launcher Data"
+                                Click="DeleteButtonClick"
                                 Background="#2D2D2D"
                                 Foreground="White"
                                 CornerRadius="8"

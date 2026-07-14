@@ -154,18 +154,18 @@ public partial class ConfigurationWindow : Window
         SaveSettings();
     }
 
-    private async void UninstallButton_Click(object? sender, RoutedEventArgs e)
+    private async void DeleteButtonClick(object? sender, RoutedEventArgs e)
     {
-        if (!Directory.Exists(_downloadedRadiumFolder))
+        if (!Directory.Exists(AppConstants.AppDataDirectory))
         {
-            await new MessageBoxWindow("Uninstall", "No downloaded Radium installation was found in the launcher folder.", null)
+            await new MessageBoxWindow("Deletion Failed", "No launcher data is stored on your system.", null)
                 .ShowDialog(this);
             return;
         }
 
         var confirm = new ConfirmationWindow(
-            "Confirm Uninstall",
-            $"This will delete the launcher-downloaded Radium installation at:\n{_downloadedRadiumFolder}\n\nThis does not remove any other Radium installation on your system.",
+            "Confirm Deletion",
+            $"This will delete data stored by the launcher at:\n{AppConstants.AppDataDirectory}",
             "Delete",
             "Cancel");
 
@@ -177,13 +177,17 @@ public partial class ConfigurationWindow : Window
 
         try
         {
-            Directory.Delete(_downloadedRadiumFolder, true);
-            await new MessageBoxWindow("Uninstall Complete", "Downloaded Radium has been removed. Please restart the launcher if you wish to reinstall.", null)
+            Directory.Delete(AppConstants.AppDataDirectory, true);
+            await new MessageBoxWindow("Deletion Complete", "Launcher data deleted, click \"OK\" or the \"X\" button to restart the launcher.",
+                    () =>
+                    {
+                        Environment.Exit(0);
+                    })
                 .ShowDialog(this);
         }
         catch (Exception ex)
         {
-            await new MessageBoxWindow("Uninstall Failed", $"Could not remove downloaded Radium: {ex.Message}", null)
+            await new MessageBoxWindow("Deletion Failed", $"Could not delete launcher data: {ex.Message}", null)
                 .ShowDialog(this);
         }
     }
