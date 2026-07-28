@@ -794,7 +794,7 @@ public partial class MainWindow : Window
             return;
         }
         
-        string appId = _isTwyEnabled ? "92" : AppConstants.SteamAppId;
+        string appId = AppConstants.SteamAppId;
         var pInfo = new ProcessStartInfo
         {
             WorkingDirectory = Path.GetDirectoryName(gameExePath),
