@@ -74,36 +74,28 @@ public class DiscordRpcService
 
     private async Task<string> GetCurrentRoom(string username)
     {
-        try
+        var userPage = await _httpClient.GetStringAsync($"https://www.radie.app/user/{username}");
+        
+        var doc = new HtmlDocument();
+        doc.LoadHtml(userPage);
+    
+        var node = doc.DocumentNode.SelectSingleNode("//p[contains(text(), '@')]/parent::div/following-sibling::p");
+
+        if (node != null)
         {
-            var userPage = await _httpClient.GetStringAsync($"https://www.radie.app/user/{username}");
-
-            var doc = new HtmlDocument();
-            doc.LoadHtml(userPage);
-
-            var node = doc.DocumentNode.SelectSingleNode("//p[contains(text(), '@')]/parent::div/following-sibling::p");
-
-            if (node != null)
+            if (node.InnerText.Trim() == "^")
             {
-                if (node.InnerText.Trim() == "^")
-                {
-                    return "offline dorm room";
-                }
-                else if (node.InnerText.Trim() == "[OFFLINE]")
-                {
-                    return "menu";
-                }
-                else if (node.InnerText.Trim() == "[PRIVATE]")
-                {
-                    return "a private room";
-                }
-                else return node.InnerText.Trim();
+                return "offline dorm room";
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            return "an Unknown Room";
+            else if (node.InnerText.Trim() == "[OFFLINE]")
+            {
+                return "menu";
+            }
+            else if (node.InnerText.Trim() == "[PRIVATE]")
+            {
+                return "a private room";
+            }
+            else return node.InnerText.Trim();
         }
 
         return "an Unknown Room";

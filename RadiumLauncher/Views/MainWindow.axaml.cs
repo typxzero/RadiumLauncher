@@ -521,14 +521,8 @@ public partial class MainWindow : Window
                     string localHash = (await File.ReadAllTextAsync(hashPath)).Trim();
                     string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
 
-                    int hashIndex = _isTwyEnabled && vm.OperatingSystemName == "Linux" ? 6 : 1;
-                    if (info.Length > hashIndex && localHash.Equals(info[hashIndex].Trim(), StringComparison.OrdinalIgnoreCase))
+                    if (info.Length >= 2 && localHash.Equals(info[1].Trim(), StringComparison.OrdinalIgnoreCase))
                     {
-                        if (_isTwyEnabled)
-                        {
-                            vm.CurrentState = LauncherState.Ready;
-                            return;
-                        }
                         try
                         {
                             string patchFilename = vm.OperatingSystemName == "Windows" ? "Patch.bat" : "Patch.sh";
@@ -595,34 +589,9 @@ public partial class MainWindow : Window
         try
         {
             string[] info = vm.InfoResponse.Split(['\n', '\r'], StringSplitOptions.RemoveEmptyEntries);
-            string downloadUrl;
-            string expectedHash;
-            if (_isTwyEnabled)
-            {
-                if (vm.OperatingSystemName == "Windows")
-                {
-                    downloadUrl = info[0].Trim();
-                }
-                else
-                {
-                    downloadUrl = info[5].Trim();
-                }
-
-                if (vm.OperatingSystemName == "Windows")
-                {
-                    expectedHash = info[1].Trim();
-                }
-                else
-                {
-                    expectedHash = info[6].Trim();
-                }
-            }
-            else
-            {
-                downloadUrl = info[0].Trim();
-                expectedHash = info[1].Trim();
-            }
-
+            string downloadUrl = info[0].Trim();
+            string expectedHash = info.Length >= 2 ? info[1].Trim() : "";
+            
             vm.CurrentState = LauncherState.Downloading;
             vm.DownloadProgress = 0;
 
@@ -700,9 +669,9 @@ public partial class MainWindow : Window
             await File.WriteAllTextAsync(Path.Combine(vm.GameFolder, "hash.txt"), hashedStr);
             await Task.Run(() => ExtractArchive(zipPath, vm.GameFolder));
 
-            // File.Delete(zipPath); // LISTEN ITS LIKE 1 AM, IM TOO LAZY FOR THIS
+            File.Delete(zipPath);
 
-            if (!_isTwyEnabled) await PatchRadium(vm);
+            await PatchRadium(vm);
             await UpdateLauncherState(vm);
         }
         catch (Exception ex)
@@ -810,13 +779,7 @@ public partial class MainWindow : Window
 
         string mode = vm.SelectedLaunchMode == "VR" ? "+mode:vr" : "+mode:screen";
 
-        if (_isTwyEnabled && vm.OperatingSystemName == "Linux")
-        {
-            Process.Start(new ProcessStartInfo("chmod", $"+x \"{gameExePath}\"") { CreateNoWindow = true })?.WaitForExit();
-            pInfo.FileName = gameExePath;
-            pInfo.Arguments = mode;
-        }
-        else if (vm.OperatingSystemName == "Linux")
+        if (vm.OperatingSystemName == "Linux")
         {
             string protonPathFile = Path.Combine(_configFolder, "protonpath.txt");
             string protonPath = File.Exists(protonPathFile) ? (await File.ReadAllTextAsync(protonPathFile)).Trim() : "";
@@ -890,7 +853,7 @@ public partial class MainWindow : Window
             var p = Process.Start(pInfo);
             if (p != null)
             {
-                var discordRpcService = _isTwyEnabled ? null : new DiscordRpcService(vm);
+                var discordRpcService = new DiscordRpcService(vm);
                 vm.GameProcess = p;
                 vm.CurrentState = LauncherState.Running;
                 p.EnableRaisingEvents = true;
@@ -898,65 +861,13 @@ public partial class MainWindow : Window
                 {
                     vm.CurrentState = LauncherState.Ready;
                     vm.GameProcess = null;
-                    discordRpcService?.Dispose();
+                    discordRpcService.Dispose();
                 });
             }
         }
         catch (Exception ex)
         {
             _ = new MessageBoxWindow("Launch Failed", ex.Message, null).ShowDialog(this);
-        }
-    }
-
-    private bool _isTwyEnabled;
-    private string _radiumGameFolder;
-    private async void ToggleTenWholeYears(MainWindowViewModel vm)
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-        {
-            _ = new MessageBoxWindow("Incompatible Operating System", "TenWholeYears is not compatible with macOS.", null).ShowDialog(this);
-        }
-        if (_isTwyEnabled)
-        {
-            vm.GameFolder = _radiumGameFolder;
-            _isTwyEnabled = false;
-            await FetchLatestInfo(vm);
-            await UpdateLauncherState(vm);
-            IconImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/radium-icon.png")));
-            LogoImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/radium-logo.png")));
-            MainLogoImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/radium-logo.png")));
-        }
-        else
-        {
-            try
-            {
-                var res = await _httpClient.GetStringAsync(
-                    "https://raw.githubusercontent.com/typxzero/RadiumLauncherFiles/refs/heads/main/LatestInfo_TWY.txt");
-                vm.InfoResponse = res;
-            }
-            catch (HttpRequestException ex)
-            {
-                vm.InfoResponse = string.Empty;
-                _ = new MessageBoxWindow("Network Error",
-                        $"Could not fetch latest info. Please check your internet connection. Details: {ex.Message}",
-                        null)
-                    .ShowDialog(this);
-            }
-            catch (Exception ex)
-            {
-                vm.InfoResponse = string.Empty;
-                _ = new MessageBoxWindow("Error",
-                        $"An unexpected error occurred while fetching latest info. Details: {ex.Message}", null)
-                    .ShowDialog(this);
-            }
-
-            _radiumGameFolder = vm.GameFolder;
-            vm.GameFolder = Path.Combine(AppConstants.AppDataDirectory, "TenWholeYears_PC");
-            _isTwyEnabled = true;
-            await UpdateLauncherState(vm);
-            IconImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/tenwholeyears-icon.png")));
-            LogoImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/tenwholeyears-logo.png")));
-            MainLogoImage.Source = new Bitmap(AssetLoader.Open(new Uri("avares://RadiumLauncher/Assets/tenwholeyears-logo.png")));
         }
     }
 
@@ -1019,22 +930,7 @@ public partial class MainWindow : Window
 
     private string? GetGameExecutablePath(MainWindowViewModel vm, string[] info)
     {
-        string expectedExeName;
-        if (_isTwyEnabled)
-        {
-            if (vm.OperatingSystemName == "Windows")
-            {
-                expectedExeName = info[3];
-            }
-            else
-            {
-                expectedExeName = info[7];
-            }
-        }
-        else
-        {
-            expectedExeName = info[3];
-        }
+        string expectedExeName = info[3].Trim();
         string candidate = Path.Combine(vm.GameFolder, expectedExeName);
         if (File.Exists(candidate))
         {
@@ -1066,13 +962,27 @@ public partial class MainWindow : Window
             var gameProcess = vm.GameProcess;
             if (gameProcess == null) return;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) || _isTwyEnabled)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 gameProcess.Kill(true);
             }
             else
             {
-                gameProcess.Kill(true);
+                string compatDataPath = Path.Combine(vm.GameFolder, "compatdata_radium");
+                var pInfo = new ProcessStartInfo("bash", $"-c \"WINEPREFIX='{compatDataPath}/pfx' wineserver -k\"")
+                {
+                    CreateNoWindow = true,
+                };
+
+                var p = Process.Start(pInfo);
+                if (p != null) await p.WaitForExitAsync();
+
+                await Task.Delay(2000);
+
+                if (!gameProcess.HasExited)
+                {
+                    gameProcess.Kill(true);
+                }
             }
         }
         catch (Exception ex)
@@ -1289,10 +1199,6 @@ public partial class MainWindow : Window
                         Debug.WriteLine($"Error checking server status: {ex}");
                         apiAvailable = false;
                     }
-                    if (_isTwyEnabled)
-                    {
-                        apiAvailable = true;
-                    }
                 }
 
                 if (apiAvailable)
@@ -1429,13 +1335,5 @@ public partial class MainWindow : Window
     {
         MarkWindowSizeAsUserDefined();
         BeginResizeDrag(WindowEdge.SouthEast, e);
-    }
-
-    private void MainLogoImage_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (DataContext is MainWindowViewModel vm)
-        {
-            ToggleTenWholeYears(vm);
-        }
     }
 }
