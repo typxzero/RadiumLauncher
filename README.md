@@ -8,6 +8,9 @@ An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
 </div>
 
+## What happens after Radium makes their official launcher?
+Probably make a better launcher than the official one. Its most likely going to need a rewrite (v2.0.0) to compete with the official launcher but that's fine. If Radium's official launcher is open source and allows contribution, I will most likely archive this repository. (unless the launcher is too bad)
+
 ## v1.2.4 Update for RadiumLauncher has arrived (unfortunately)
 - TenWholeYears is gone 😢😢
 
