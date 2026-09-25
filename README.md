@@ -1,15 +1,21 @@
+⚠️ RadiumLauncher is no longer going to be updated, and RadiumLauncher 2.0 is cancelled. A v1.2.5 may be made as a final update to get file info directly from Radium instead of manually updating the repository.
+
 <div align="center">
 
 # RadiumLauncher
-
 An unofficial launcher for [Radium](https://radie.app/), a Rec Room revival.
 
 ![Preview](Assets/v1.2.4-preview.png)
 
 </div>
 
+## Alternatives to use after project archival
+- Official Radium launcher
+- Forks of typxzero/RadiumLauncher
+~# ngl but the other unofficial launchers are ass
+
 ## What happens after Radium makes their official launcher?
-Probably make a better launcher than the official one. Its most likely going to need a rewrite (v2.0.0) to compete with the official launcher but that's fine. If Radium's official launcher is open source and allows contribution, I will most likely archive this repository. (unless the launcher is too bad)
+~~Probably make a better launcher than the official one. Its most likely going to need a rewrite (v2.0.0) to compete with the official launcher but that's fine. If Radium's official launcher is open source and allows contribution, I will most likely archive this repository. (unless the launcher is too bad)~~
 
 ## v1.2.4 Update for RadiumLauncher has arrived (unfortunately)
 - TenWholeYears is gone 😢😢
